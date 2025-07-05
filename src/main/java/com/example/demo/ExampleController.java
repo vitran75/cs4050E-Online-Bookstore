@@ -10,7 +10,7 @@ public class ExampleController {
 
     @RequestMapping("/")
     public String home() {
-        return "home"; // This must match your JSP file name (home.jsp)
+        return "home";
     }
 
     @RequestMapping("/next")

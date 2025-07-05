@@ -269,7 +269,7 @@
     <a href="/admin">Admin Panel</a>
 </footer>
 
-<!-- Register Modal -->
+<!-- Signup Modal -->
 <div id="registerModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
