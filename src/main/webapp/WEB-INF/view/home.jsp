@@ -113,19 +113,47 @@
             border-radius: 6px;
             text-align: center;
             box-shadow: 0 0 8px rgba(255, 68, 68, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 68, 68, 0.2);
         }
 
         .book-card img {
-            width: 100px;
-            height: 150px;
+            width: 150px;
+            height: 225px;
             object-fit: cover;
             margin-bottom: 10px;
             border-radius: 4px;
+            border: 1px solid #333;
         }
 
         .book-card h3 {
             font-size: 1.1rem;
             margin: 0.5rem 0 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .book-card p {
+            margin: 0.2rem 0;
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+
+        .book-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .book-actions .btn {
+            flex: 1;
+            margin: 0 0.2rem;
+            padding: 0.4rem 0;
         }
 
         footer {
@@ -205,6 +233,13 @@
         .modal-btn:hover {
             background: #333;
         }
+
+        .release-date {
+            color: #ff4444 !important;
+            font-style: italic;
+            margin-top: 0.5rem !important;
+        }
+
     </style>
 </head>
 
@@ -239,11 +274,10 @@
                     <h3>${book.title}</h3>
                     <p>by ${book.author}</p>
                     <p>$${book.price}</p>
-                    <a href="/book/${book.id}" class="btn">Details</a>
-                    <form action="/cart/add" method="post">
-                        <input type="hidden" name="bookId" value="${book.id}">
+                    <div class="book-actions">
+                        <a href="/book/${book.id}" class="btn">Details</a>
                         <button type="submit" class="btn">Add to Cart</button>
-                    </form>
+                    </div>
                 </div>
             </c:forEach>
         </div>
@@ -258,7 +292,7 @@
                     <img src="${book.imageUrl}" alt="${book.title}">
                     <h3>${book.title}</h3>
                     <p>by ${book.author}</p>
-                    <p><em>${book.price}</em></p>
+                    <p class="release-date">${book.price}</p>
                 </div>
             </c:forEach>
         </div>
