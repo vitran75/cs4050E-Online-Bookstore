@@ -258,7 +258,7 @@
                     <img src="${book.imageUrl}" alt="${book.title}">
                     <h3>${book.title}</h3>
                     <p>by ${book.author}</p>
-                    <p><em>Releases: ${book.releaseDate}</em></p>
+                    <p><em>${book.price}</em></p>
                 </div>
             </c:forEach>
         </div>
