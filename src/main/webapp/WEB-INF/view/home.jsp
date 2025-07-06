@@ -402,6 +402,71 @@
                 right: 5px;
             }
 
+            /* Profile Modal Styles */
+            .profile-tabs {
+                display: flex;
+                border-bottom: 1px solid #eee;
+                margin-bottom: 1rem;
+            }
+
+            .tab-btn {
+                padding: 0.8rem 1rem;
+                background: none;
+                border: none;
+                cursor: pointer;
+                font-size: 0.9rem;
+                color: #777;
+                position: relative;
+            }
+
+            .tab-btn.active {
+                color: #000;
+                font-weight: bold;
+            }
+
+            .tab-btn.active::after {
+                content: '';
+                position: absolute;
+                bottom: -1px;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: #ff4444;
+            }
+
+            .tab-content {
+                display: none;
+            }
+
+            .saved-card, .saved-address {
+                background: #f9f9f9;
+                padding: 1rem;
+                border-radius: 8px;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .saved-card i {
+                font-size: 1.5rem;
+                color: #555;
+            }
+
+            .saved-card span, .saved-address p {
+                flex: 1;
+                margin: 0;
+            }
+
+            .saved-address h4 {
+                margin: 0 0 0.5rem 0;
+                flex: 1;
+            }
+
+            .saved-address p {
+                color: #555;
+            }
+
         </style>
     </head>
 
@@ -430,7 +495,7 @@
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count" style="display: none">0</span>
             </a>
-            <a href="/profile" title="Profile"><i class="fas fa-user"></i></a>
+            <a href="javascript:void(0);" onclick="openProfileModal()" title="Profile"><i class="fas fa-user"></i></a>
         </div>
     </header>
 
@@ -524,6 +589,83 @@
                         <span class="total-amount">$0.00</span>
                     </div>
                     <button class="modal-btn checkout-btn">Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content" style="width: 500px;">
+            <div class="modal-header">
+                <h2>My Profile</h2>
+                <span class="close" onclick="closeProfileModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="profile-tabs">
+                    <button class="tab-btn active" onclick="openTab(event, 'personalInfo')">Personal Info</button>
+                    <button class="tab-btn" onclick="openTab(event, 'changePassword')">Change Password</button>
+                    <button class="tab-btn" onclick="openTab(event, 'paymentInfo')">Payment Info</button>
+                    <button class="tab-btn" onclick="openTab(event, 'addressInfo')">Address</button>
+                </div>
+
+                <!-- Personal Info Tab -->
+                <div id="personalInfo" class="tab-content" style="display: block;">
+                    <form class="modal-form">
+                        <input type="text" name="firstName" placeholder="First Name" value="John">
+                        <input type="text" name="lastName" placeholder="Last Name" value="Doe">
+                        <input type="email" name="email" placeholder="Email" value="john.doe@example.com">
+                        <input type="tel" name="phone" placeholder="Phone" value="(123) 456-7890">
+                        <button type="submit" class="modal-btn">Update Info</button>
+                    </form>
+                </div>
+
+                <!-- Change Password Tab -->
+                <div id="changePassword" class="tab-content">
+                    <form class="modal-form">
+                        <input type="password" name="currentPassword" placeholder="Current Password">
+                        <input type="password" name="newPassword" placeholder="New Password">
+                        <input type="password" name="confirmPassword" placeholder="Confirm New Password">
+                        <button type="submit" class="modal-btn">Change Password</button>
+                    </form>
+                </div>
+
+                <!-- Payment Info Tab -->
+                <div id="paymentInfo" class="tab-content">
+                    <div class="saved-card">
+                        <i class="fas fa-credit-card"></i>
+                        <span>VISA ending in 4242</span>
+                        <button class="small-btn">Edit</button>
+                        <button class="small-btn" style="color: #ff4444;">Remove</button>
+                    </div>
+                    <form class="modal-form" style="margin-top: 1rem;">
+                        <input type="text" name="cardNumber" placeholder="Card Number">
+                        <input type="text" name="cardName" placeholder="Name on Card">
+                        <div style="display: flex; gap: 1rem;">
+                            <input type="text" name="expiry" placeholder="MM/YY" style="flex: 1;">
+                            <input type="text" name="cvv" placeholder="CVV" style="flex: 1;">
+                        </div>
+                        <button type="submit" class="modal-btn">Add Payment Method</button>
+                    </form>
+                </div>
+
+                <!-- Address Info Tab -->
+                <div id="addressInfo" class="tab-content">
+                    <div class="saved-address">
+                        <h4>Primary Address</h4>
+                        <p>123 Main St, Apt 4B<br>New York, NY 10001</p>
+                        <button class="small-btn">Edit</button>
+                    </div>
+                    <form class="modal-form" style="margin-top: 1rem;">
+                        <input type="text" name="street" placeholder="Street Address">
+                        <input type="text" name="apt" placeholder="Apt, Suite, etc.">
+                        <input type="text" name="city" placeholder="City">
+                        <div style="display: flex; gap: 1rem;">
+                            <input type="text" name="state" placeholder="State" style="flex: 1;">
+                            <input type="text" name="zip" placeholder="ZIP Code" style="flex: 1;">
+                        </div>
+                        <button type="submit" class="modal-btn">Add Address</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -716,6 +858,38 @@
                 cartIcon.classList.remove('pulse');
             }, 1000);
         }
+
+        // Profile Modal Functions
+        function openProfileModal() {
+            document.getElementById('profileModal').style.display = 'block';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').style.display = 'none';
+        }
+
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].style.display = 'none';
+            }
+
+            const tabButtons = document.getElementsByClassName('tab-btn');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(' active', '');
+            }
+
+            document.getElementById(tabName).style.display = 'block';
+            evt.currentTarget.className += ' active';
+        }
+
+        // Update window.onclick to handle profile modal
+        window.onclick = function (e) {
+            if (e.target === document.getElementById('registerModal')) closeRegisterModal();
+            if (e.target === document.getElementById('loginModal')) closeLoginModal();
+            if (e.target === document.getElementById('cartModal')) closeCartModal();
+            if (e.target === document.getElementById('profileModal')) closeProfileModal();
+        };
 
         // Helper function - you'll need to implement this based on your book data
         function getBookById(bookId) {
