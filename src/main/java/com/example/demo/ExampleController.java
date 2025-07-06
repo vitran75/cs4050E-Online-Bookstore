@@ -2,9 +2,11 @@ package com.example.demo;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;  // Add this import
 import org.springframework.web.servlet.ModelAndView;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;  // Add this import
 
 @Controller
 public class ExampleController {
@@ -29,8 +31,31 @@ public class ExampleController {
                 new Book("5", "New Book 2", "Author 2",
                         "https://via.placeholder.com/150x225?text=Coming+Soon+2", "Coming July 2023")
         );
+
         model.addObject("featuredBooks", featuredBooks);
         model.addObject("comingSoonBooks", comingSoonBooks);
+        return model;
+    }
+
+    @RequestMapping("/search")
+    public ModelAndView search(@RequestParam String query, @RequestParam(defaultValue = "title") String filter) {
+        ModelAndView model = new ModelAndView("home");
+
+        // For now, just return the same mock data
+        // In a real app, this would filter books based on the query
+        List<Book> featuredBooks = Arrays.asList(
+                new Book("1", "The Great Gatsby", "F. Scott Fitzgerald",
+                        "https://via.placeholder.com/150x225?text=Gatsby", "12.99"),
+                new Book("2", "To Kill a Mockingbird", "Harper Lee",
+                        "https://via.placeholder.com/150x225?text=Mockingbird", "10.99"),
+                new Book("3", "1984", "George Orwell",
+                "https://via.placeholder.com/150x225?text=1984", "9.99")
+        );
+
+        model.addObject("featuredBooks", featuredBooks);
+        model.addObject("comingSoonBooks", Collections.emptyList());
+        model.addObject("searchQuery", query);
+        model.addObject("searchFilter", filter);
         return model;
     }
 
