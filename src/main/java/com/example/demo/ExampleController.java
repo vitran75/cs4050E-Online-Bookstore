@@ -59,6 +59,11 @@ public class ExampleController {
         return model;
     }
 
+    @RequestMapping("/profile")
+    public String profile() {
+        return "redirect:/"; // Just redirect to home for now
+    }
+
     // Simple Book class for mock data
     public static class Book {
         private String id;
