@@ -33,25 +33,63 @@
             flex: 1;
             margin: 0 2rem;
             display: flex;
+            position: relative;
         }
 
         .search-bar input {
             flex: 1;
-            padding: 0.5rem;
+            padding: 0.5rem 1rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 4px 0 0 4px;
             background: #2b2b2b;
             color: #fff;
+            font-size: 0.95rem;
+        }
+
+        .search-bar select {
+            padding: 0.5rem;
+            border: none;
+            background: #333;
+            color: #fff;
+            border-left: 1px solid #444;
+            border-right: 1px solid #444;
+            cursor: pointer;
         }
 
         .search-bar button {
-            margin-left: 8px;
-            padding: 0.5rem 0.7rem;
+            margin-left: 0;
+            padding: 0.5rem 1rem;
             background: #ff4444;
             border: none;
             color: white;
-            border-radius: 4px;
+            border-radius: 0 4px 4px 0;
             cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-bar button:hover {
+            background: #e63939;
+        }
+
+        /* Search suggestions dropdown */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2b2b2b;
+            border-radius: 0 0 4px 4px;
+            z-index: 100;
+            display: none;
+        }
+
+        .search-suggestions div {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .search-suggestions div:hover {
+            background: #ff4444;
         }
 
         .header-icons a {
@@ -249,8 +287,13 @@
     <div class="logo">Online Bookstore</div>
 
     <div class="search-bar">
-        <form action="/search" method="get">
-            <input type="text" name="query" placeholder="Search title, author, genre">
+        <form action="/search" method="get" id="searchForm">
+            <input type="text" name="query" placeholder="Search title, author, genre" id="searchInput">
+            <select name="filter" id="searchFilter">
+                <option value="title">Title</option>
+                <option value="author">Author</option>
+                <option value="genre">Genre</option>
+            </select>
             <button type="submit"><i class="fas fa-search"></i></button>
         </form>
     </div>
@@ -335,6 +378,8 @@
     </div>
 </div>
 
+
+
 <script>
     function openRegisterModal() {
         document.getElementById('registerModal').style.display = 'block';
@@ -356,6 +401,63 @@
         if (e.target === document.getElementById('registerModal')) closeRegisterModal();
         if (e.target === document.getElementById('loginModal')) closeLoginModal();
     };
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const searchForm = document.getElementById('searchForm');
+    const searchFilter = document.getElementById('searchFilter');
+    const suggestionsContainer = document.createElement('div');
+    suggestionsContainer.className = 'search-suggestions';
+    searchForm.appendChild(suggestionsContainer);
+
+    // Mock search suggestions - these would normally come from backend
+    const mockSuggestions = {
+        title: ['The Great Gatsby', 'To Kill a Mockingbird', '1984'],
+        author: ['F. Scott Fitzgerald', 'Harper Lee', 'George Orwell'],
+        genre: ['Classic Literature', 'Dystopian', 'Fiction']
+    };
+
+    searchInput.addEventListener('input', function() {
+        const filter = searchFilter.value;
+        const query = this.value.toLowerCase();
+
+        if (query.length > 1) {
+            const filtered = mockSuggestions[filter].filter(item =>
+                item.toLowerCase().includes(query)
+                    .slice(0, 5);
+
+            showSuggestions(filtered);
+        } else {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+
+    function showSuggestions(items) {
+        if (items.length > 0) {
+            suggestionsContainer.innerHTML = '';
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.textContent = item;
+                div.addEventListener('click', function() {
+                    searchInput.value = item;
+                    suggestionsContainer.style.display = 'none';
+                    searchForm.submit();
+                });
+                suggestionsContainer.appendChild(div);
+            });
+            suggestionsContainer.style.display = 'block';
+        } else {
+            suggestionsContainer.style.display = 'none';
+        }
+    }
+
+    // Close suggestions when clicking elsewhere
+    document.addEventListener('click', function(e) {
+        if (!searchForm.contains(e.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+
 </script>
 
 </body>
