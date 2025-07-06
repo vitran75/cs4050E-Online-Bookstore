@@ -14,17 +14,21 @@ public class ExampleController {
 
         // Mock data for featured books
         List<Book> featuredBooks = Arrays.asList(
-                new Book("1", "The Great Gatsby", "F. Scott Fitzgerald", "https://example.com/book1.jpg", "12.99"),
-                new Book("2", "To Kill a Mockingbird", "Harper Lee", "https://example.com/book2.jpg", "10.99"),
-                new Book("3", "1984", "George Orwell", "https://example.com/book3.jpg", "9.99")
+                new Book("1", "The Great Gatsby", "F. Scott Fitzgerald",
+                        "https://via.placeholder.com/150x225?text=Gatsby", "12.99"),
+                new Book("2", "To Kill a Mockingbird", "Harper Lee",
+                        "https://via.placeholder.com/150x225?text=Mockingbird", "10.99"),
+                new Book("3", "1984", "George Orwell",
+                        "https://via.placeholder.com/150x225?text=1984", "9.99")
         );
 
         // Mock data for coming soon books
         List<Book> comingSoonBooks = Arrays.asList(
-                new Book("4", "New Book 1", "Author 1", "https://example.com/coming1.jpg", "Coming June 2023"),
-                new Book("5", "New Book 2", "Author 2", "https://example.com/coming2.jpg", "Coming July 2023")
+                new Book("4", "New Book 1", "Author 1",
+                        "https://via.placeholder.com/150x225?text=Coming+Soon+1", "Coming June 2023"),
+                new Book("5", "New Book 2", "Author 2",
+                        "https://via.placeholder.com/150x225?text=Coming+Soon+2", "Coming July 2023")
         );
-
         model.addObject("featuredBooks", featuredBooks);
         model.addObject("comingSoonBooks", comingSoonBooks);
         return model;
