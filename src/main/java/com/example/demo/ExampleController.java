@@ -87,4 +87,29 @@ public class ExampleController {
         public String getImageUrl() { return imageUrl; }
         public String getPrice() { return price; }
     }
+    // Admin home page
+    @RequestMapping("/admin")
+    public ModelAndView adminHome() {
+        return new ModelAndView("adminHome"); // Renders /WEB-INF/jsp/adminHome.jsp
+    }
+
+    // Admin books page
+    @RequestMapping("/admin/books")
+    public ModelAndView adminBooks() {
+        // You can later add model attributes like book list here
+        return new ModelAndView("adminBooks");
+    }
+
+    // Admin users page
+    @RequestMapping("/admin/users")
+    public ModelAndView adminUsers() {
+        return new ModelAndView("adminUsers");
+    }
+
+    // Admin promotions page
+    @RequestMapping("/admin/promotions")
+    public ModelAndView adminPromotions() {
+        return new ModelAndView("adminPromotions");
+    }
+
 }

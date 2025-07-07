@@ -536,7 +536,7 @@
     </main>
 
     <footer>
-        <a href="/admin">Admin Panel</a>
+        <a href="/admin">Admin View</a>
     </footer>
 
     <!-- Signup Modal -->
