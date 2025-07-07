@@ -588,7 +588,7 @@
                         <span>Subtotal:</span>
                         <span class="total-amount">$0.00</span>
                     </div>
-                    <button class="modal-btn checkout-btn">Proceed to Checkout</button>
+                    <button class="modal-btn checkout-btn" onclick="window.location.href='/checkout'">Proceed to Checkout</button>
                 </div>
             </div>
         </div>
