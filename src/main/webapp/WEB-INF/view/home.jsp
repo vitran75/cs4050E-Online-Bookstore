@@ -588,7 +588,10 @@
                         <span>Subtotal:</span>
                         <span class="total-amount">$0.00</span>
                     </div>
-                    <button class="modal-btn checkout-btn" onclick="window.location.href='/checkout'">Proceed to Checkout</button>
+                    <div style="display: flex; gap: 1rem; flex-direction: column;">
+                        <button class="modal-btn checkout-btn" onclick="window.location.href='/checkout'">Proceed to Checkout</button>
+                        <button class="modal-btn checkout-btn" onclick="window.location.href='/orderHistory'">Order History</button>
+                    </div>
                 </div>
             </div>
         </div>

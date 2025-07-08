@@ -115,7 +115,12 @@ public class ExampleController {
 
     @RequestMapping("/checkout")
     public ModelAndView checkout() {
-        return new ModelAndView("checkout"); // this renders checkout.jsp
+        return new ModelAndView("checkout");
+    }
+
+    @RequestMapping("/orderHistory")
+    public ModelAndView orderHistory() {
+        return new ModelAndView("orderHistory");
     }
 
 

@@ -413,62 +413,62 @@
                 <button class="btn-primary" onclick="completeOrder()">Complete Order</button>
             </div>
 
-            <!-- Confirmation Page (Hidden by default) -->
-            <div id="confirmation-page" class="hidden">
-                <div class="confirmation-message">
-                    <i class="fas fa-check-circle"></i>
-                    <h2>Order Confirmed!</h2>
-                    <div class="order-number">Order #BS-2024-001234</div>
-                    <p>Thank you for your purchase! A confirmation email has been sent to <strong>john.doe@email.com</strong></p>
-                    <p>You will receive shipping updates at the same email address.</p>
-                </div>
+        </div>
 
-                <div class="step">
-                    <h3 style="color: #ff4444; margin-bottom: 1rem;">Order Summary</h3>
-                    <div class="order-item">
-                        <div class="book-info">
-                            <div class="book-title">The Great Gatsby</div>
-                            <div class="book-author">by F. Scott Fitzgerald</div>
-                        </div>
-                        <div class="book-price">$12.99</div>
+    <!-- Confirmation Page (Hidden by default) -->
+        <div id="confirmation-page" class="hidden">
+            <div class="confirmation-message">
+                <i class="fas fa-check-circle"></i>
+                <h2>Order Confirmed!</h2>
+                <div class="order-number">Order #BS-2024-001234</div>
+                <p>Thank you for your purchase! A confirmation email has been sent to <strong>john.doe@email.com</strong></p>
+                <p>You will receive shipping updates at the same email address.</p>
+            </div>
+
+            <div class="step">
+                <h3 style="color: #ff4444; margin-bottom: 1rem;">Order Summary</h3>
+                <div class="order-item">
+                    <div class="book-info">
+                        <div class="book-title">The Great Gatsby</div>
+                        <div class="book-author">by F. Scott Fitzgerald</div>
                     </div>
-                    <div class="order-item">
-                        <div class="book-info">
-                            <div class="book-title">To Kill a Mockingbird</div>
-                            <div class="book-author">by Harper Lee</div>
-                        </div>
-                        <div class="book-price">$14.99</div>
+                    <div class="book-price">$12.99</div>
+                </div>
+                <div class="order-item">
+                    <div class="book-info">
+                        <div class="book-title">To Kill a Mockingbird</div>
+                        <div class="book-author">by Harper Lee</div>
                     </div>
-                    <div class="order-item">
-                        <div class="book-info">
-                            <div class="book-title">1984</div>
-                            <div class="book-author">by George Orwell</div>
-                        </div>
-                        <div class="book-price">$13.99</div>
+                    <div class="book-price">$14.99</div>
+                </div>
+                <div class="order-item">
+                    <div class="book-info">
+                        <div class="book-title">1984</div>
+                        <div class="book-author">by George Orwell</div>
                     </div>
-                    
-                    <div class="order-totals">
-                        <div class="total-row">
-                            <span>Subtotal:</span>
-                            <span>$41.97</span>
-                        </div>
-                        <div class="total-row">
-                            <span>Shipping:</span>
-                            <span>$4.99</span>
-                        </div>
-                        <div class="total-row">
-                            <span>Tax:</span>
-                            <span>$3.76</span>
-                        </div>
-                        <div class="total-row final">
-                            <span>Total:</span>
-                            <span>$50.72</span>
-                        </div>
+                    <div class="book-price">$13.99</div>
+                </div>
+                
+                <div class="order-totals">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span>$41.97</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Shipping:</span>
+                        <span>$4.99</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Tax:</span>
+                        <span>$3.76</span>
+                    </div>
+                    <div class="total-row final">
+                        <span>Total:</span>
+                        <span>$50.72</span>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="order-summary">
             <h3 style="color: #ff4444; margin-bottom: 1rem;">Order Summary</h3>
             
