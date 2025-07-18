@@ -28,6 +28,10 @@ public class Book {
 
     @Transient
     private List<BookReview> reviews;
+    
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<BookPrice> prices;
+    
 
     public Book() {}
 
@@ -135,4 +139,12 @@ public class Book {
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
+
+public List<BookPrice> getPrices() {
+    return prices;
+}
+
+public void setPrices(List<BookPrice> prices) {
+    this.prices = prices;
+}
 } 

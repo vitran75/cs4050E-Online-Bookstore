@@ -11,9 +11,6 @@ public class BookReview {
     @Column(name = "review_id")
     private int id;
 
-    @Column(name = "book_id", nullable = false)
-    private int bookId;
-
     @Column(name = "reviewer_name", nullable = false)
     private String reviewerName;
 
@@ -23,31 +20,23 @@ public class BookReview {
     @Column(columnDefinition = "TEXT")
     private String reviewText;
 
+    @ManyToOne
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
+
     public BookReview() {}
 
-    public BookReview(int bookId, String reviewerName, int rating, String reviewText) {
-        this.bookId = bookId;
+    public BookReview(Book book, String reviewerName, int rating, String reviewText) {
+        this.book = book;
         this.reviewerName = reviewerName;
         this.rating = rating;
         this.reviewText = reviewText;
     }
 
-    // Getters and setters
+    // Getters and Setters
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(int bookId) {
-        this.bookId = bookId;
     }
 
     public String getReviewerName() {
@@ -74,14 +63,22 @@ public class BookReview {
         this.reviewText = reviewText;
     }
 
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
     @Override
     public String toString() {
         return "BookReview{" +
                 "id=" + id +
-                ", bookId=" + bookId +
                 ", reviewerName='" + reviewerName + '\'' +
                 ", rating=" + rating +
                 ", reviewText='" + reviewText + '\'' +
                 '}';
     }
 }
+

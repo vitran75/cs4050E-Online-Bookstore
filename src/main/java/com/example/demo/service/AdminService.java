@@ -4,8 +4,6 @@ import com.example.demo.model.Admin;
 import com.example.demo.repository.AdminRepository;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.util.EncryptionUtil;
-import com.example.demo.service.EmailService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

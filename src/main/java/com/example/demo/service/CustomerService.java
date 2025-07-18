@@ -11,17 +11,12 @@ import com.example.demo.repository.AdminRepository;
 import com.example.demo.util.EncryptionUtil;
 import com.example.demo.model.Status;
 import com.example.demo.model.Role;
-import com.example.demo.service.EmailService;
-import com.example.demo.service.PaymentCardService;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service

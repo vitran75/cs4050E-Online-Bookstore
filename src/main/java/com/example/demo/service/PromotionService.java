@@ -1,12 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Book;
 import com.example.demo.model.BookPromotion;
 import com.example.demo.model.Customer;
 import com.example.demo.repository.PromotionRepository;
 import com.example.demo.repository.CustomerRepository;
-import com.example.demo.service.EmailService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

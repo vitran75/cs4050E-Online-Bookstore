@@ -8,18 +8,31 @@ import java.math.BigDecimal;
 public class BookPrice {
 
     @Id
-    @Column(name = "format")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private FormatType formatType;
 
     @Column(nullable = false)
     private BigDecimal price;
 
+    @ManyToOne
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
+
     public BookPrice() {}
 
-    public BookPrice(FormatType formatType, BigDecimal price) {
+    public BookPrice(FormatType formatType, BigDecimal price, Book book) {
         this.formatType = formatType;
         this.price = price;
+        this.book = book;
+    }
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
     }
 
     public FormatType getFormatType() {
@@ -36,5 +49,13 @@ public class BookPrice {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
     }
 }

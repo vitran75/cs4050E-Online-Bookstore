@@ -1,8 +1,7 @@
 package com.example.demo;
 
-import com.example.demo.model.*;
+import com.example.demo.model.Address;
 import com.example.demo.service.AddressService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
@@ -16,7 +15,6 @@ public class AddressController {
 
     private final AddressService addressService;
 
-    @Autowired
     public AddressController(AddressService addressService) {
         this.addressService = addressService;
     }

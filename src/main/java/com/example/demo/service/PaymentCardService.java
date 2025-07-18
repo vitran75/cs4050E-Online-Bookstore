@@ -8,12 +8,8 @@ import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.AddressRepository;
 import com.example.demo.util.EncryptionUtil;
 import com.example.demo.PaymentCardController.PaymentCardRequest;
-import com.example.demo.dto.OrderPricingRequest;
-
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
-import java.util.Map;
 import java.util.List;
 import java.util.Optional;
 

@@ -4,7 +4,6 @@ import com.example.demo.model.Book;
 import com.example.demo.model.BookReview;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.ReviewRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +16,6 @@ public class BookService {
     private final BookRepository bookRepository;
     private final ReviewRepository reviewRepository;
 
-    @Autowired
     public BookService(BookRepository bookRepository, ReviewRepository reviewRepository) {
         this.bookRepository = bookRepository;
         this.reviewRepository = reviewRepository;
@@ -79,7 +77,7 @@ public class BookService {
             if (updatedBook.getPublisher() != null) book.setPublisher(updatedBook.getPublisher());
             if (updatedBook.getIsbn() != null) book.setIsbn(updatedBook.getIsbn());
             if (updatedBook.getCoverImageUrl() != null) book.setCoverImageUrl(updatedBook.getCoverImageUrl());
-            return bookRepository.save(book); 
+            return bookRepository.save(book);
         }).orElse(null);
     }
 
@@ -92,23 +90,24 @@ public class BookService {
     }
 
     public List<BookReview> getReviewsForBookById(int bookId) {
-        return reviewRepository.findByBookId(bookId);
+        return reviewRepository.findByBook_Id(bookId);
     }
 
     public List<BookReview> getReviewsForBookByTitle(String title) {
         Optional<Book> book = bookRepository.findFirstByTitleContainingIgnoreCase(title);
-        return book.map(value -> reviewRepository.findByBookId(value.getId())).orElseGet(List::of);
+        return book.map(value -> reviewRepository.findByBook_Id(value.getId())).orElseGet(List::of);
     }
 
     public List<String> getAllPublishers() {
         return bookRepository.findAll().stream()
                 .map(Book::getPublisher)
+                .filter(p -> p != null && !p.isEmpty())
                 .distinct()
                 .collect(Collectors.toList());
     }
 
     private void assignReviewsToBook(Book book) {
-        List<BookReview> reviews = reviewRepository.findByBookId(book.getId());
+        List<BookReview> reviews = reviewRepository.findByBook_Id(book.getId());
         book.setReviews(reviews);
     }
 }

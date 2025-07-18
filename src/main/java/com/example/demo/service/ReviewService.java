@@ -4,7 +4,6 @@ import com.example.demo.model.BookReview;
 import com.example.demo.model.Book;
 import com.example.demo.repository.ReviewRepository;
 import com.example.demo.repository.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +15,6 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final BookRepository bookRepository;
 
-    @Autowired
     public ReviewService(ReviewRepository reviewRepository, BookRepository bookRepository) {
         this.reviewRepository = reviewRepository;
         this.bookRepository = bookRepository;
@@ -24,9 +22,9 @@ public class ReviewService {
 
     // Add review by book ID
     public BookReview addReviewByBookId(int bookId, BookReview review) {
-        Optional<Book> book = bookRepository.findById(bookId);
-        if (book.isPresent()) {
-            review.setBookId(bookId);
+        Optional<Book> bookOpt = bookRepository.findById(bookId);
+        if (bookOpt.isPresent()) {
+            review.setBook(bookOpt.get()); // 🔧 use object, not ID
             return reviewRepository.save(review);
         }
         return null;
@@ -34,9 +32,9 @@ public class ReviewService {
 
     // Add review by book title
     public BookReview addReviewByBookTitle(String title, BookReview review) {
-        Optional<Book> book = bookRepository.findFirstByTitleContainingIgnoreCase(title);
-        if (book.isPresent()) {
-            review.setBookId(book.get().getId());
+        Optional<Book> bookOpt = bookRepository.findFirstByTitleContainingIgnoreCase(title);
+        if (bookOpt.isPresent()) {
+            review.setBook(bookOpt.get()); // 🔧 use object, not ID
             return reviewRepository.save(review);
         }
         return null;
@@ -44,7 +42,7 @@ public class ReviewService {
 
     // Get all reviews for a book
     public List<BookReview> getReviewsForBook(int bookId) {
-        return reviewRepository.findByBookId(bookId);
+        return reviewRepository.findByBook_Id(bookId); // 🔧 adjust to use object reference
     }
 
     // Delete review by ID

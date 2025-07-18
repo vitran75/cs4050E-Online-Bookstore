@@ -6,7 +6,6 @@ import com.example.demo.util.EncryptionUtil;
 
 import java.time.LocalDate;
 
-import com.example.demo.model.Address;
 
 @Entity
 @Table(name = "payment_card")

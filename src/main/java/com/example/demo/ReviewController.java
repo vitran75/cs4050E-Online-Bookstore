@@ -2,7 +2,6 @@ package com.example.demo;
 
 import com.example.demo.model.BookReview;
 import com.example.demo.service.ReviewService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
@@ -15,7 +14,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @Autowired
+
     public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
     }
