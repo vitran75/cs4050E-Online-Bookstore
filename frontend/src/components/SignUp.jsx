@@ -3,31 +3,32 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PaymentCardInput from "./PaymentCardInput.jsx";
 import SimpleAlert from "./SimpleAlert.jsx";
+import '../styles/AuthForms.css';
 
 const InputField = ({ type, placeholder, icon, value, onChange, required }) => {
   const [isPasswordShown, setIsPasswordShow] = useState(false);
   const inputType = type === 'password' && isPasswordShown ? 'text' : type;
 
   return (
-    <div className="relative w-full mb-4">
-      <input
-        type={inputType}
-        value={value}
-        placeholder={placeholder}
-        className="w-full p-3 pl-10 pr-3 rounded-md bg-zinc-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-        onChange={onChange}
-        required={required}
-      />
-      <i className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">{icon}</i>
-      {type === 'password' && (
-        <i
-          className="material-symbols-outlined absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-          onClick={() => setIsPasswordShow((prev) => !prev)}
-        >
-          {isPasswordShown ? 'visibility' : 'visibility_off'}
-        </i>
-      )}
-    </div>
+      <div className="relative w-full mb-4">
+        <input
+            type={inputType}
+            value={value}
+            placeholder={placeholder}
+            className="auth__input"
+            onChange={onChange}
+            required={required}
+        />
+        <i className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">{icon}</i>
+        {type === 'password' && (
+            <i
+                className="material-symbols-outlined absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                onClick={() => setIsPasswordShow((prev) => !prev)}
+            >
+              {isPasswordShown ? 'visibility' : 'visibility_off'}
+            </i>
+        )}
+      </div>
   );
 };
 
@@ -78,7 +79,7 @@ const SignUpPage = () => {
         isSubscriber: isSubscriber ? "TRUE" : "FALSE",
       };
       const hasAddress = Object.values(prev.address || {}).some(
-        (val) => val && val.trim() !== ""
+          (val) => val && val.trim() !== ""
       );
       if (!hasAddress) delete base.address;
       return base;
@@ -104,7 +105,7 @@ const SignUpPage = () => {
     try {
       if (isAdmin) {
         const filteredData = JSON.stringify(formCustomer, (key, value) =>
-          ["address", "isSubscriber", "role", "status"].includes(key) ? undefined : value
+            ["address", "isSubscriber", "role", "status"].includes(key) ? undefined : value
         );
         await axios.post("http://localhost:8080/api/admins", JSON.parse(filteredData));
         handleAlert();
@@ -139,18 +140,17 @@ const SignUpPage = () => {
         } else {
           handleAlert("Failed to register. Try again.");
         }
-        return; // Stop execution if creation failed
+        return;
       }
-      
-      
+
       const customerRes = await axios.get(`http://localhost:8080/api/customers/email/${email}`);
       const customerId = customerRes.data.userId;
 
       if (showPayment && newPaymentCards.length > 0) {
         for (const card of newPaymentCards) {
           await axios.post(
-            `http://localhost:8080/api/payment-cards/customer/${customerId}/new-address`,
-            card
+              `http://localhost:8080/api/payment-cards/customer/${customerId}/new-address`,
+              card
           );
         }
       }
@@ -165,96 +165,96 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-black p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-6 text-red-600">Sign Up</h2>
+      <div className="w-full min-h-screen flex items-center justify-center bg-neutral-900 px-4">
+        <div className="auth__container">
+          <h2 className="auth__title">Sign Up</h2>
 
-        <form onSubmit={signUp} className="space-y-4">
-          <InputField value={firstName} type="text" placeholder="First Name" icon="person" onChange={(e) => setFirstName(e.target.value)} required />
-          <InputField value={lastName} type="text" placeholder="Last Name" icon="person" onChange={(e) => setLastName(e.target.value)} required />
-          <InputField value={email} type="email" placeholder="Email" icon="mail" onChange={(e) => setEmail(e.target.value)} required />
-          <InputField value={password} type="password" placeholder="Password (6+ chars)" icon="lock" onChange={(e) => setPassword(e.target.value)} required />
-          <InputField value={phone} type="tel" placeholder="Phone Number" icon="call" onChange={(e) => setPhone(e.target.value)} required />
+          <form onSubmit={signUp} className="auth__form">
+            <InputField value={firstName} type="text" placeholder="First Name" icon="person" onChange={(e) => setFirstName(e.target.value)} required />
+            <InputField value={lastName} type="text" placeholder="Last Name" icon="person" onChange={(e) => setLastName(e.target.value)} required />
+            <InputField value={email} type="email" placeholder="Email" icon="mail" onChange={(e) => setEmail(e.target.value)} required />
+            <InputField value={password} type="password" placeholder="Password (6+ chars)" icon="lock" onChange={(e) => setPassword(e.target.value)} required />
+            <InputField value={phone} type="tel" placeholder="Phone Number" icon="call" onChange={(e) => setPhone(e.target.value)} required />
 
-          {location.pathname === "/Sign-Up" && (
-            <>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={isSubscriber} onChange={() => setIsSubscriber(!isSubscriber)} className="accent-red-600" />
-                Subscribe to Promotions
-              </label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={showPayment} onChange={() => setShowPayment(!showPayment)} className="accent-red-600" />
-                Add Payment Card(s)
-              </label>
+            {location.pathname === "/Sign-Up" && (
+                <>
+                  <label className="text-sm flex items-center gap-2">
+                    <input type="checkbox" checked={isSubscriber} onChange={() => setIsSubscriber(!isSubscriber)} className="accent-red-600" />
+                    Subscribe to Promotions
+                  </label>
+                  <label className="text-sm flex items-center gap-2">
+                    <input type="checkbox" checked={showPayment} onChange={() => setShowPayment(!showPayment)} className="accent-red-600" />
+                    Add Payment Card(s)
+                  </label>
 
-              {showPayment && (
-                <PaymentCardInput
-                  paymentCards={newPaymentCards}
-                  setPaymentCards={setNewPaymentCards}
-                  existingPaymentCards={[]}
-                  handleDeletePaymentCard={() => {}}
-                />
-              )}
-            </>
-          )}
+                  {showPayment && (
+                      <PaymentCardInput
+                          paymentCards={newPaymentCards}
+                          setPaymentCards={setNewPaymentCards}
+                          existingPaymentCards={[]}
+                          handleDeletePaymentCard={() => {}}
+                      />
+                  )}
+                </>
+            )}
 
-          {location.pathname === "/Sign-Up/Admin" ? (
-            <>
-              <InputField value={givenSecPass} type="password" placeholder="Admin Security Password" icon="lock" onChange={(e) => setGivenSecPass(e.target.value)} required />
-              <button disabled={!isAdmin} type="submit" className="w-full bg-red-600 hover:bg-red-700 py-2 rounded-md font-semibold">Create Account</button>
-            </>
-          ) : (
-            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 py-2 rounded-md font-semibold">Create Account</button>
-          )}
-        </form>
+            {location.pathname === "/Sign-Up/Admin" ? (
+                <>
+                  <InputField value={givenSecPass} type="password" placeholder="Admin Security Password" icon="lock" onChange={(e) => setGivenSecPass(e.target.value)} required />
+                  <button disabled={!isAdmin} type="submit" className="auth__button">Create Account</button>
+                </>
+            ) : (
+                <button type="submit" className="auth__button">Create Account</button>
+            )}
+          </form>
 
-        <p className="text-center text-sm mt-6">
-          Already have an account? <a href="/login" className="text-red-400 hover:underline">Login now</a>
-        </p>
-
-        {showAlert && <SimpleAlert message={alertMessage} />}
-
-        {showPopup && (
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-2">Enter Verification Code</h3>
-            <InputField
-              value={verificationCode}
-              type="text"
-              placeholder="Enter your code"
-              icon="key"
-              onChange={(e) => setVerificationCode(e.target.value)}
-            />
-
-            <button
-              onClick={async () => {
-                try {
-                  await axios.post("http://localhost:8080/api/customers/send-verification", { email });
-                  handleAlert("A new verification code has been sent.");
-                } catch (error) {
-                  handleAlert("Failed to resend code. Try again.");
-                }
-              }}
-              className="mt-2 text-sm text-blue-400 hover:underline"
-            >
-              Resend Code
-            </button>
-
-            <div className="flex gap-3 mt-2">
-              <button
-                onClick={verifyCodeAndCreateAccount}
-                disabled={!verificationCode}
-                className={`flex-1 py-2 rounded-md ${
-                  verificationCode ? "bg-green-600 hover:bg-green-700" : "bg-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Verify
-              </button>
-              <button onClick={() => setShowPopup(false)} className="flex-1 bg-gray-600 hover:bg-gray-700 py-2 rounded-md">Cancel</button>
-            </div>
+          <div className="auth__links">
+            <p>Already have an account? <a href="/login">Login now</a></p>
           </div>
-        )}
+
+          {showAlert && <SimpleAlert message={alertMessage} />}
+
+          {showPopup && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-2">Enter Verification Code</h3>
+                <InputField
+                    value={verificationCode}
+                    type="text"
+                    placeholder="Enter your code"
+                    icon="key"
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                />
+
+                <button
+                    onClick={async () => {
+                      try {
+                        await axios.post("http://localhost:8080/api/customers/send-verification", { email });
+                        handleAlert("A new verification code has been sent.");
+                      } catch (error) {
+                        handleAlert("Failed to resend code. Try again.");
+                      }
+                    }}
+                    className="mt-2 text-sm text-blue-400 hover:underline"
+                >
+                  Resend Code
+                </button>
+
+                <div className="flex gap-3 mt-2">
+                  <button
+                      onClick={verifyCodeAndCreateAccount}
+                      disabled={!verificationCode}
+                      className={`flex-1 py-2 rounded-md ${
+                          verificationCode ? "bg-green-600 hover:bg-green-700" : "bg-gray-500 cursor-not-allowed"
+                      }`}
+                  >
+                    Verify
+                  </button>
+                  <button onClick={() => setShowPopup(false)} className="flex-1 bg-gray-600 hover:bg-gray-700 py-2 rounded-md">Cancel</button>
+                </div>
+              </div>
+          )}
+        </div>
       </div>
-    </div>
   );
 };
 
