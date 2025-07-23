@@ -1,6 +1,6 @@
 import React from 'react';
 import ForgotPassword from '../components/ForgotPassword';
-import '../styles/LogIn-SignUp.css';
+import '../styles/AuthForms.css';
 
 const ForgotPasswordPage = () => {
   return (

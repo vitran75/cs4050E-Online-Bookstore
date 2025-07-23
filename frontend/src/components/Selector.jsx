@@ -7,7 +7,8 @@ const Selector = ({ options, selectedValue, onChange, name, required = false }) 
       value={selectedValue}
       onChange={(e) => onChange(e.target.value)}
       required={required}
-      className="selector-dropdown"
+
+      className="form-input bg-neutral-700 text-white"
     >
       <option value="" disabled>
         Select...
