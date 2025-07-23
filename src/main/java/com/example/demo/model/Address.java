@@ -11,23 +11,23 @@ public class Address {
     @Column(name = "address_id")
     private int id;
 
-    @Column(nullable = false)
+    @Column
     private String streetLine;
 
-    @Column(nullable = false)
+    @Column
     private String cityName;
 
-    @Column(nullable = false)
+    @Column
     private String stateCode;
 
-    @Column(name = "postal_code", nullable = false)
+    @Column(name = "postal_code")
     private String postalCode;
 
-    @Column(nullable = false)
+    @Column
     private String countryName;
 
     public Address() {}
-
+    // Constructor with parameters
     public Address(String streetLine, String cityName, String stateCode, String postalCode, String countryName) {
         this.streetLine = streetLine;
         this.cityName = cityName;

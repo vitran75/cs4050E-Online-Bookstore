@@ -1,0 +1,18 @@
+.profile-page {
+    padding: 2rem;
+    background: #fdfdfd;
+    color: #111;
+  }
+  
+  .profile-page h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .profile-section {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  

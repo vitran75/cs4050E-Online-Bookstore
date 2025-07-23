@@ -21,6 +21,23 @@ public class AddressService {
         return addressRepository.findAll();
     }
 
+    // Save a new address
+    public Address saveAddress(Address address) {
+        return addressRepository.save(address);
+    }
+
+    // Update an existing address by ID
+    public Optional<Address> updateAddress(int id, Address updatedAddress) {
+        return addressRepository.findById(id).map(existing -> {
+            existing.setStreetLine(updatedAddress.getStreetLine());
+            existing.setCityName(updatedAddress.getCityName());
+            existing.setStateCode(updatedAddress.getStateCode());
+            existing.setPostalCode(updatedAddress.getPostalCode());
+            existing.setCountryName(updatedAddress.getCountryName());
+            return addressRepository.save(existing);
+        });
+    }
+
     // Get address by ID
     public Optional<Address> getAddressById(int id) {
         return addressRepository.findById(id);
@@ -39,4 +56,5 @@ public class AddressService {
         }
         return false;
     }
+
 }

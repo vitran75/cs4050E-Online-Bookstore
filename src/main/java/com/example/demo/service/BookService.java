@@ -4,6 +4,9 @@ import com.example.demo.model.Book;
 import com.example.demo.model.BookReview;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.ReviewRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +32,7 @@ public class BookService {
         return books;
     }
 
+    @Transactional
     public List<Book> getAllBooks() {
         List<Book> books = bookRepository.findAll();
         books.forEach(this::assignReviewsToBook);

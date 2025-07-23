@@ -1,0 +1,143 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #111;
+    color: #f1f1f1;
+  }
+  
+  header {
+    background-color: #1a1a1a;
+    color: #ff4444;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+  
+  .back-link {
+    color: #ff4444;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  
+  .container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  
+  .page-title {
+    color: #ff4444;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .order-card {
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 0 8px rgba(255, 68, 68, 0.15);
+    border: 1px solid #333;
+  }
+  
+  .order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+  }
+  
+  .order-number {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff4444;
+    margin-bottom: 0.3rem;
+  }
+  
+  .order-date {
+    color: #bbb;
+    font-size: 0.9rem;
+  }
+  
+  .order-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #1f4f1f;
+    color: #4f8f4f;
+  }
+  
+  .order-items {
+    margin-bottom: 1.5rem;
+  }
+  
+  .order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #333;
+  }
+  
+  .order-item:last-child {
+    border-bottom: none;
+  }
+  
+  .book-details {
+    flex: 1;
+  }
+  
+  .book-title {
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+  }
+  
+  .book-author {
+    color: #bbb;
+    font-size: 0.9rem;
+  }
+  
+  .book-price {
+    font-weight: bold;
+    color: #ff4444;
+    margin-left: 1rem;
+  }
+  
+  .order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #333;
+    padding-top: 1rem;
+  }
+  
+  .order-total {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff4444;
+  }
+  
+  .btn-primary {
+    background-color: #ff4444;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    background-color: #e03e3e;
+  }
+  

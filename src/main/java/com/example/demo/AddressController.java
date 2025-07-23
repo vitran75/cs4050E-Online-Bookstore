@@ -7,16 +7,31 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 import java.util.List;
+
 // This controller handles CRUD operations for addresses in the online bookstore application.
 @RestController
 @RequestMapping("/api/addresses")
-@CrossOrigin("*")  // Allow frontend calls (adjust CORS settings for production)
+@CrossOrigin("*") // Allow frontend calls (adjust CORS settings for production)
 public class AddressController {
 
     private final AddressService addressService;
-
+    // Constructor injection for AddressService
     public AddressController(AddressService addressService) {
         this.addressService = addressService;
+    }
+
+    // Create a new address
+    @PostMapping
+    public ResponseEntity<Address> createAddress(@RequestBody Address address) {
+        Address saved = addressService.saveAddress(address);
+        return ResponseEntity.ok(saved);
+    }
+    // Update an existing address by ID
+    @PutMapping("/{id}")
+    public ResponseEntity<Address> updateAddress(@PathVariable int id, @RequestBody Address updatedAddress) {
+        Optional<Address> updated = addressService.updateAddress(id, updatedAddress);
+        return updated.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Get all addresses
@@ -30,7 +45,7 @@ public class AddressController {
     public ResponseEntity<Address> getAddressById(@PathVariable int id) {
         Optional<Address> address = addressService.getAddressById(id);
         return address.map(ResponseEntity::ok)
-                      .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Delete an address by ID
