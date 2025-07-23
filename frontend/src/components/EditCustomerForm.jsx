@@ -5,37 +5,34 @@ import Swal from 'sweetalert2';
 
 const AddressInput = ({ address, setAddress, label, required = true }) => {
   const handleChange = (field, value) => {
-    const newAddress = {
-      ...address,
-      [field]: value,
-    };
-    setAddress(newAddress);
+    setAddress({ ...address, [field]: value });
   };
 
+  const addressFields = ['street', 'city', 'state', 'zipCode', 'country'];
+
   return (
-    <div className="admin__form__review__att">
-      {required ? (
-        <label>
-          <span className="red">*</span> {label}
+      <div className="form-group">
+        <label className="block font-semibold mb-2">
+          {required && <span className="text-red-500">*</span>} {label}
         </label>
-      ) : (
-        <label>{label}</label>
-      )}
-      <div className="admin__form__review__att__rating__addy">
-        {['street', 'city', 'state', 'zipCode', 'country'].map((field) => (
-          <div className="admin__form__review__att__rating__addy" key={field}>
-            <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
-            <input
-              type="text"
-              placeholder={`Enter ${field}`}
-              value={address[field] || ''}
-              onChange={(e) => handleChange(field, e.target.value)}
-              required={required}
-            />
-          </div>
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {addressFields.map((field) => (
+              <div key={field}>
+                <label className="block text-sm text-gray-300 mb-1">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                </label>
+                <input
+                    type="text"
+                    placeholder={`Enter ${field}`}
+                    value={address[field] || ''}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                    required={required}
+                    className="form-input"
+                />
+              </div>
+          ))}
+        </div>
       </div>
-    </div>
   );
 };
 
@@ -58,8 +55,7 @@ const EditCustomerForm = ({ customer }) => {
     role: customer.role,
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = ({ target: { name, value } }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -87,42 +83,91 @@ const EditCustomerForm = ({ customer }) => {
   };
 
   return (
-    <div className="admin__edit__customer__form">
-      <h2>Edit Customer</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Email:</label>
-        <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+      <div className="admin__edit__customer__form max-w-2xl mx-auto text-white bg-neutral-800 p-6 rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold mb-6">Edit Customer</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm mb-1">Email</label>
+            <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="form-input"
+            />
+          </div>
 
-        <label>First Name:</label>
-        <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} required />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm mb-1">First Name</label>
+              <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  className="form-input"
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-1">Last Name</label>
+              <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  className="form-input"
+              />
+            </div>
+          </div>
 
-        <label>Last Name:</label>
-        <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} required />
+          <div>
+            <label className="block text-sm mb-1">New Password (optional)</label>
+            <input
+                type="password"
+                name="decryptedPassword"
+                value={formData.decryptedPassword}
+                onChange={handleChange}
+                className="form-input"
+            />
+          </div>
 
-        <label>New Password (optional):</label>
-        <input type="password" name="decryptedPassword" value={formData.decryptedPassword} onChange={handleChange} />
+          <AddressInput
+              address={formData.address}
+              setAddress={handleAddressChange}
+              label="Home Address"
+          />
 
-        <AddressInput address={formData.address} setAddress={handleAddressChange} label="Home Address" />
+          <div>
+            <label className="block text-sm mb-1">Subscriber</label>
+            <Selector
+                options={['TRUE', 'FALSE']}
+                selectedValue={formData.isSubscriber}
+                onChange={(val) => setFormData((prev) => ({ ...prev, isSubscriber: val }))}
+                name="isSubscriber"
+            />
+          </div>
 
-        <label>Subscriber:</label>
-        <Selector
-          options={['TRUE', 'FALSE']}
-          selectedValue={formData.isSubscriber}
-          onChange={(val) => setFormData((prev) => ({ ...prev, isSubscriber: val }))}
-          name="isSubscriber"
-        />
+          <div>
+            <label className="block text-sm mb-1">Status</label>
+            <Selector
+                options={['ACTIVE', 'SUSPENDED']}
+                selectedValue={formData.status}
+                onChange={(val) => setFormData((prev) => ({ ...prev, status: val }))}
+                name="status"
+            />
+          </div>
 
-        <label>Status:</label>
-        <Selector
-          options={['ACTIVE', 'SUSPENDED']}
-          selectedValue={formData.status}
-          onChange={(val) => setFormData((prev) => ({ ...prev, status: val }))}
-          name="status"
-        />
-
-        <button type="submit" className="admin__edit__submit__btn">Update</button>
-      </form>
-    </div>
+          <button
+              type="submit"
+              className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md font-semibold transition duration-200"
+          >
+            Update
+          </button>
+        </form>
+      </div>
   );
 };
 

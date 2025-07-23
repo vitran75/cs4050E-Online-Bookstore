@@ -1,7 +1,7 @@
 .form-group {
     margin-bottom: 1rem;
   }
-  
+
   .form-group input,
   .form-group select {
     width: 100%;
@@ -11,23 +11,23 @@
     border: 1px solid #ccc;
     border-radius: 4px;
   }
-  
+
   .form-row {
     display: flex;
     gap: 1rem;
   }
-  
+
   .step-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  
+
   .step-title {
     font-size: 1.2rem;
     font-weight: bold;
   }
-  
+
   .step-number {
     background-color: #ff4444;
     color: #fff;
@@ -35,4 +35,3 @@
     border-radius: 50%;
     font-weight: bold;
   }
-  
