@@ -28,32 +28,38 @@ const Header = ({ title = 'BookByte' }) => {
   return (
       <header className="header">
         <div className="header-content">
-          <div className="logo-container">
-            <h1 className="logo">{title}</h1>
-            <a href="/store" className="nav-link">Back to Store</a>
-          </div>
+          <h1 className="logo">{title}</h1>
 
-          <div className="nav-links">
-            {isLoggedIn ? (
-                <>
-                  <div className="icon-container" onClick={() => navigate('/profile')}>
-                    <FontAwesomeIcon icon={faUser} size="lg" />
-                    <span className="icon-label">Profile</span>
-                  </div>
+          <div className="nav-container">
+            <div className="auth-section">
+              {isLoggedIn ? (
+                  <>
+                    <div className="icon-container" onClick={() => navigate('/profile')}>
+                      <FontAwesomeIcon icon={faUser} size="lg" />
+                      <span className="icon-label">Profile</span>
+                    </div>
 
-                  <div className="icon-container" onClick={() => navigate('/checkout')}>
-                    <FontAwesomeIcon icon={faShoppingCart} size="lg" />
-                    <span className="icon-label">Cart</span>
-                  </div>
+                    <div className="icon-container" onClick={() => navigate('/checkout')}>
+                      <FontAwesomeIcon icon={faShoppingCart} size="lg" />
+                      <span className="icon-label">Cart</span>
+                    </div>
 
-                  <button className="btn" onClick={handleLogout}>Sign Out</button>
-                </>
-            ) : (
-                <>
-                  <button className="btn" onClick={() => navigate('/login')}>Sign In</button>
-                  <button className="btn" onClick={() => navigate('/signup')}>Sign Up</button>
-                </>
-            )}
+                    <button className="btn" onClick={handleLogout}>Sign Out</button>
+                  </>
+              ) : (
+                  <>
+                    <button className="btn" onClick={() => navigate('/login')}>Sign In</button>
+                    <button className="btn" onClick={() => navigate('/signup')}>Sign Up</button>
+                  </>
+              )}
+            </div>
+
+            <button
+                className="btn back-to-store"
+                onClick={() => navigate('/')}
+            >
+              Back to Store
+            </button>
           </div>
         </div>
       </header>
