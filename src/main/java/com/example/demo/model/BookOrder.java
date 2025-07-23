@@ -1,5 +1,6 @@
-package com.example.demo.model; 
+package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,6 +18,10 @@ public class BookOrder {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @OneToMany(mappedBy = "bookOrder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<OrderItem> orderItems;
+
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
@@ -28,44 +33,44 @@ public class BookOrder {
     @JoinColumn(name = "promo_id")
     private BookPromotion promotion;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<OrderItem> items;
+    @Column(name = "is_shipped")
+    private boolean isShipped = false;
 
     @Column(name = "shipping_fee", precision = 10, scale = 2)
-    private BigDecimal shippingFee;
+    private BigDecimal storedShippingFee;
 
     @Column(name = "is_refunded")
     private boolean isRefunded = false;
 
     @Transient
-    private final BigDecimal taxRate = BigDecimal.valueOf(0.07);
+    private final BigDecimal taxRate = BigDecimal.valueOf(0.07); // 7% tax
 
-    public BookOrder() {}
-
-    public BookOrder(Customer customer, LocalDateTime orderDate,
-                     PaymentCard paymentCard, BookPromotion promotion) {
-        this.customer = customer;
-        this.orderDate = orderDate;
-        this.paymentCard = paymentCard;
-        this.promotion = promotion;
-    }
+    // === Transient Calculations ===
 
     @Transient
     public BigDecimal getSubtotal() {
-        if (items == null || items.isEmpty()) return BigDecimal.ZERO;
-        return items.stream()
-                .map(item -> item.getTotalPrice() != null ? item.getTotalPrice() : BigDecimal.ZERO)
+        if (orderItems == null || orderItems.isEmpty())
+            return BigDecimal.ZERO;
+        return orderItems.stream()
+                .map(OrderItem::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Transient
     public BigDecimal getTaxAmount() {
-        return getSubtotal().add(getShippingFee()).multiply(taxRate);
+        return getSubtotal().multiply(taxRate);
+    }
+
+    @Transient
+    public BigDecimal getShippingFee() {
+        return storedShippingFee != null ? storedShippingFee : BigDecimal.ZERO;
     }
 
     @Transient
     public BigDecimal getDiscountAmount() {
-        if (promotion == null || promotion.getDiscount() == null) return BigDecimal.ZERO;
+        if (promotion == null || promotion.getDiscount() == null)
+            return BigDecimal.ZERO;
+
         BigDecimal discountRate = promotion.getDiscount().divide(BigDecimal.valueOf(100));
         BigDecimal base = getSubtotal().add(getShippingFee()).add(getTaxAmount());
         return base.multiply(discountRate);
@@ -78,6 +83,8 @@ public class BookOrder {
                 .add(getTaxAmount())
                 .subtract(getDiscountAmount());
     }
+
+    // === Getters and Setters ===
 
     public int getOrderId() {
         return orderId;
@@ -93,6 +100,14 @@ public class BookOrder {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 
     public LocalDateTime getOrderDate() {
@@ -119,27 +134,27 @@ public class BookOrder {
         this.promotion = promotion;
     }
 
-    public List<OrderItem> getItems() {
-        return items;
+    public boolean isShipped() {
+        return isShipped;
     }
 
-    public void setItems(List<OrderItem> items) {
-        this.items = items;
+    public void setShipped(boolean shipped) {
+        isShipped = shipped;
     }
 
-    public BigDecimal getShippingFee() {
-        return shippingFee != null ? shippingFee : BigDecimal.ZERO;
+    public BigDecimal getStoredShippingFee() {
+        return storedShippingFee;
     }
 
-    public void setShippingFee(BigDecimal shippingFee) {
-        this.shippingFee = shippingFee;
+    public void setStoredShippingFee(BigDecimal storedShippingFee) {
+        this.storedShippingFee = storedShippingFee;
     }
-
     public boolean isRefunded() {
         return isRefunded;
     }
-
+    
     public void setRefunded(boolean refunded) {
         isRefunded = refunded;
     }
+    
 }

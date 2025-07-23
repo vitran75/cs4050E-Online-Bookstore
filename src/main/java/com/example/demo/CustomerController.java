@@ -25,16 +25,23 @@ import java.util.Map;
 @CrossOrigin("*")
 public class CustomerController {
 
-    @Autowired private CustomerService customerService;
-    @Autowired private EmailService emailService;
-    @Autowired private VerificationCodeStore verificationCodeStore;
-    @Autowired private AdminService adminService;
-    @Autowired private JwtUtil jwtUtil;
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private VerificationCodeStore verificationCodeStore;
+    @Autowired
+    private AdminService adminService;
+    @Autowired
+    private JwtUtil jwtUtil;
+
     // Endpoint to create a new customer
     @PostMapping
     public ResponseEntity<?> createCustomer(@RequestBody Customer customer) {
         try {
-            if (customerService.isEmailRegistered(customer.getEmail()) || adminService.emailExists(customer.getEmail())) {
+            if (customerService.isEmailRegistered(customer.getEmail())
+                    || adminService.emailExists(customer.getEmail())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already registered");
             }
             Customer savedCustomer = customerService.registerCustomer(customer);
@@ -146,13 +153,15 @@ public class CustomerController {
             try {
                 emailService.sendConfirmationEmail(email);
             } catch (RuntimeException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send confirmation email");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Failed to send confirmation email");
             }
             return ResponseEntity.ok("Email verified successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verification failed");
         }
     }
+
     // Endpoint for customer login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
@@ -175,12 +184,13 @@ public class CustomerController {
                 customer.setLastLoggedIn(new Timestamp(System.currentTimeMillis()));
                 customerService.save(customer);
 
-                String token = jwtUtil.generateToken(email, customer.getRole().toString()); // Generate JWT token
+                String token = jwtUtil.generateToken(email, customer.getRole().toString(), customer.getUserId()); // Generate
+                                                                                                                  // JWT
+                                                                                                                  // token
                 return ResponseEntity.ok(Map.of(
-                    "message", "Login successful.",
-                    "role", customer.getRole().toString(),
-                    "token", token
-                ));
+                        "message", "Login successful.",
+                        "role", customer.getRole().toString(),
+                        "token", token));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password.");
             }
@@ -191,12 +201,11 @@ public class CustomerController {
                     admin.setLastLoggedIn(new Timestamp(System.currentTimeMillis()));
                     adminService.saveAdmin(admin);
 
-                    String token = jwtUtil.generateToken(email, admin.getRole().toString());
+                    String token = jwtUtil.generateToken(email, admin.getRole().toString(), admin.getUserId());
                     return ResponseEntity.ok(Map.of(
-                        "message", "Login successful.",
-                        "role", admin.getRole().toString(),
-                        "token", token
-                    ));
+                            "message", "Login successful.",
+                            "role", admin.getRole().toString(),
+                            "token", token));
                 } else {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password.");
                 }
@@ -219,6 +228,18 @@ public class CustomerController {
             return ResponseEntity.ok("Logout successful.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found.");
+        }
+    }
+
+    @GetMapping("/details/{email}")
+    public ResponseEntity<?> getCustomerDetailsByEmail(@PathVariable String email) {
+        try {
+            Customer customer = customerService.findCustomerByEmail(email);
+            return ResponseEntity.ok(Map.of(
+                    "address", customer.getAddress(),
+                    "paymentCards", customer.getPaymentCards()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
         }
     }
 }

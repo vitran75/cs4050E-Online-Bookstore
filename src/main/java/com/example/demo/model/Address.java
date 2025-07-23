@@ -26,6 +26,11 @@ public class Address {
     @Column
     private String countryName;
 
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+
     public Address() {}
     // Constructor with parameters
     public Address(String streetLine, String cityName, String stateCode, String postalCode, String countryName) {

@@ -1,33 +1,88 @@
-
-
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
+import { jwtDecode } from 'jwt-decode'; 
+
 import '../styles/Checkout.css';
 
 const Checkout = () => {
-  const [showCardForm, setShowCardForm] = useState(false);
-  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [customerId, setCustomerId] = useState(null);
   const [savedCard, setSavedCard] = useState(null);
   const [savedAddress, setSavedAddress] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
   const [confirmationShown, setConfirmationShown] = useState(false);
-
-  const customerId = 1; // Replace with actual logged-in user ID
+  const [showCardForm, setShowCardForm] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const decoded = jwtDecode(token);
+      console.log("Decoded JWT:", decoded);
+    
+      const id = decoded.id ?? decoded.userId;
+      if (!id || isNaN(id)) {
+        throw new Error("Invalid ID in JWT");
+      }
+    
+      setCustomerId(Number(id));
+    } catch (err) {
+      console.error("JWT decode error:", err.message);
+      alert("Invalid token. Please log in again.");
+    }
+    
+
+    const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
+    setCartItems(storedCart);
+  }, []);
+
+  useEffect(() => {
+    if (!customerId) return;
+
     fetch(`http://localhost:8080/api/payment-cards/customer/${customerId}`)
-      .then(res => res.json())
+      .then(res => res.ok ? res.json() : Promise.reject())
       .then(setSavedCard)
       .catch(() => setSavedCard(null));
 
     fetch(`http://localhost:8080/api/customers/${customerId}/addresses`)
-      .then(res => res.json())
+      .then(res => res.ok ? res.json() : Promise.reject())
       .then(data => setSavedAddress(data[0]))
       .catch(() => setSavedAddress(null));
-  }, []);
+  }, [customerId]);
 
-  const completeOrder = () => setConfirmationShown(true);
+  const completeOrder = async () => {
+    if (!savedCard || !savedAddress || cartItems.length === 0) {
+      alert("Missing card, address, or cart items.");
+      return;
+    }
 
-  const submitPaymentCard = () => {
+    const orderPayload = {
+      customerId,
+      paymentCardId: savedCard.id,
+      addressId: savedAddress.id,
+      orderItems: cartItems.map(item => ({
+        bookId: item.bookId,
+        quantity: item.quantity,
+        price: item.unitPrice,
+      })),
+    };
+
+    try {
+      const res = await fetch("http://localhost:8080/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (!res.ok) throw new Error("Failed to place order");
+      setConfirmationShown(true);
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
+  const submitNewCard = () => {
     const cardNumber = document.getElementById("card-number").value;
     const expirationDate = document.getElementById("expiry").value;
     const cvv = document.getElementById("cvv").value;
@@ -38,10 +93,19 @@ const Checkout = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cardNumber, expirationDate, cvv, cardHolderName })
     })
-      .then(res => res.json())
-      .then(() => completeOrder())
-      .catch(err => alert("Payment Error: " + err.message));
+      .then(res => res.ok ? res.json() : Promise.reject("Card submission failed"))
+      .then(card => {
+        setSavedCard(card);
+        completeOrder();
+      })
+      .catch(alert);
   };
+
+  const submitPayment = () => {
+    showCardForm ? submitNewCard() : completeOrder();
+  };
+
+  if (!customerId) return <div>Loading...</div>;
 
   if (confirmationShown) {
     return (
@@ -61,137 +125,54 @@ const Checkout = () => {
     <div>
       <Header title="Checkout" />
       <div className="checkout-container">
-        <div className="checkout-steps">
-          {/* Payment Step */}
-          <div className="step active">
-            <div className="step-header">
-              <h2 className="step-title">Payment Information</h2>
-              <div className="step-number">1</div>
+        {/* === Payment Step === */}
+        <div className="step">
+          <h2 className="step-title">Payment Information</h2>
+          {savedCard && !showCardForm ? (
+            <div className="saved-card">
+              <div>**** **** **** {savedCard.cardNumber?.slice(-4)}</div>
+              <div>Expires {savedCard.expirationDate}</div>
+              <button onClick={() => setShowCardForm(true)}>Change</button>
             </div>
-            {savedCard && !showCardForm ? (
-              <div className="saved-card">
-                <div className="card-info">
-                  <div className="card-number">**** **** **** {savedCard.cardNumber.slice(-4)}</div>
-                  <div className="card-details">Visa | Expires {savedCard.expirationDate} | {savedCard.cardHolderName}</div>
-                </div>
-                <button className="change-btn" onClick={() => setShowCardForm(true)}>Change</button>
-              </div>
-            ) : (
-              <div id="payment-form">
-                <div className="form-group">
-                  <label htmlFor="card-number">Card Number</label>
-                  <input type="text" id="card-number" placeholder="1234 5678 9012 3456" />
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="expiry">Expiry Date</label>
-                    <input type="text" id="expiry" placeholder="MM/YY" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="cvv">CVV</label>
-                    <input type="text" id="cvv" placeholder="123" />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="cardholder">Cardholder Name</label>
-                  <input type="text" id="cardholder" placeholder="John Doe" />
-                </div>
-                <button className="btn-secondary" onClick={() => setShowCardForm(false)}>Use Saved Card</button>
-              </div>
-            )}
-          </div>
-
-          {/* Shipping Step */}
-          <div className="step">
-            <div className="step-header">
-              <h2 className="step-title">Shipping Address</h2>
-              <div className="step-number">2</div>
+          ) : (
+            <div className="form">
+              <input id="card-number" placeholder="Card Number" />
+              <input id="expiry" placeholder="MM/YY" />
+              <input id="cvv" placeholder="CVV" />
+              <input id="cardholder" placeholder="Cardholder Name" />
+              <button onClick={() => setShowCardForm(false)}>Use Saved Card</button>
             </div>
-            {savedAddress && !showAddressForm ? (
-              <div className="saved-address">
-                <div className="address-info">
-                  <div><strong>{savedAddress.fullName}</strong></div>
-                  <div>{savedAddress.addressLine1}{savedAddress.addressLine2 && `, ${savedAddress.addressLine2}`}</div>
-                  <div>{savedAddress.city}, {savedAddress.state} {savedAddress.zipCode}</div>
-                  <div>{savedAddress.country}</div>
-                </div>
-                <button className="change-btn" onClick={() => setShowAddressForm(true)}>Change</button>
-              </div>
-            ) : (
-              <div id="address-form">
-                <div className="form-group">
-                  <label htmlFor="full-name">Full Name</label>
-                  <input type="text" id="full-name" placeholder="John Doe" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="address1">Address Line 1</label>
-                  <input type="text" id="address1" placeholder="123 Main Street" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="address2">Address Line 2 (Optional)</label>
-                  <input type="text" id="address2" placeholder="Apt 4B" />
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="city">City</label>
-                    <input type="text" id="city" placeholder="New York" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="state">State</label>
-                    <select id="state">
-                      <option value="">Select State</option>
-                      <option value="NY">New York</option>
-                      <option value="CA">California</option>
-                      <option value="TX">Texas</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="zip">ZIP Code</label>
-                    <input type="text" id="zip" placeholder="10001" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="country">Country</label>
-                    <select id="country">
-                      <option value="US">United States</option>
-                      <option value="CA">Canada</option>
-                    </select>
-                  </div>
-                </div>
-                <button className="btn-secondary" onClick={() => setShowAddressForm(false)}>Use Saved Address</button>
-              </div>
-            )}
-          </div>
-
-          {/* Review Step */}
-          <div className="step">
-            <div className="step-header">
-              <h2 className="step-title">Review Order</h2>
-              <div className="step-number">3</div>
-            </div>
-            <p style={{ color: '#bbb', marginBottom: '1rem' }}>
-              Please review your order details before completing your purchase.
-            </p>
-            <button className="btn-primary" onClick={submitPaymentCard}>Complete Order</button>
-          </div>
+          )}
         </div>
 
-        <div className="order-summary">
-          <h3 style={{ color: '#ff4444', marginBottom: '1rem' }}>Order Summary</h3>
-          <div className="order-item">
-            <div className="book-info">
-              <div className="book-title">Sample Book</div>
-              <div className="book-author">by Author</div>
+        {/* === Address Step === */}
+        <div className="step">
+          <h2 className="step-title">Shipping Address</h2>
+          {savedAddress && !showAddressForm ? (
+            <div className="saved-address">
+              <div>{savedAddress.fullName}</div>
+              <div>{savedAddress.addressLine1}</div>
+              <div>{savedAddress.city}, {savedAddress.state} {savedAddress.zipCode}</div>
+              <button onClick={() => setShowAddressForm(true)}>Change</button>
             </div>
-            <div className="book-price">$10.00</div>
-          </div>
-          <div className="order-totals">
-            <div className="total-row"><span>Subtotal:</span><span>$10.00</span></div>
-            <div className="total-row"><span>Shipping:</span><span>$2.00</span></div>
-            <div className="total-row"><span>Tax:</span><span>$0.80</span></div>
-            <div className="total-row final"><span>Total:</span><span>$12.80</span></div>
-          </div>
+          ) : (
+            <div className="form">
+              {/* You can implement address form if needed */}
+              <p>Address form (not implemented)</p>
+              <button onClick={() => setShowAddressForm(false)}>Use Saved Address</button>
+            </div>
+          )}
+        </div>
+
+        {/* === Review & Submit === */}
+        <div className="step">
+          <h2>Review Order</h2>
+          {cartItems.map(item => (
+            <div key={item.bookId}>
+              Book #{item.bookId} - Qty: {item.quantity} - ${item.unitPrice * item.quantity}
+            </div>
+          ))}
+          <button className="btn-primary" onClick={submitPayment}>Complete Order</button>
         </div>
       </div>
     </div>

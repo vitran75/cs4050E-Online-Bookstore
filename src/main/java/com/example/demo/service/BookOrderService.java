@@ -39,8 +39,8 @@ public class BookOrderService {
         return bookOrderRepository.findById(orderId).map(existingOrder -> {
             existingOrder.setPaymentCard(updatedOrder.getPaymentCard());
             existingOrder.setPromotion(updatedOrder.getPromotion());
-            existingOrder.setItems(updatedOrder.getItems());
-            existingOrder.setShippingFee(updatedOrder.getShippingFee());
+            existingOrder.setOrderItems(updatedOrder.getOrderItems());
+            existingOrder.setStoredShippingFee(updatedOrder.getShippingFee());
             calculateOrderAmounts(existingOrder);
             return bookOrderRepository.save(existingOrder);
         }).orElse(null);
@@ -56,8 +56,11 @@ public class BookOrderService {
 
     public BookOrder refundOrder(int orderId) {
         return bookOrderRepository.findById(orderId).map(order -> {
-            order.setRefunded(true);
-            return bookOrderRepository.save(order);
+            if (!order.isRefunded()) {
+                order.setRefunded(true);
+                return bookOrderRepository.save(order);
+            }
+            return order; // already refunded
         }).orElse(null);
     }
 

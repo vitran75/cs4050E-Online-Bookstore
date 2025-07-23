@@ -29,7 +29,7 @@ public class Book {
     @Transient
     private List<BookReview> reviews;
     
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BookPrice> prices;
     
 

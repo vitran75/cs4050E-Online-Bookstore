@@ -1,5 +1,7 @@
 package com.example.demo.model; 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -22,6 +24,7 @@ public class BookReview {
 
     @ManyToOne
     @JoinColumn(name = "book_id", nullable = false)
+    @JsonIgnore
     private Book book;
 
     public BookReview() {}

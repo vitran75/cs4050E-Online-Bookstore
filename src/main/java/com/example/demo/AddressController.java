@@ -15,6 +15,7 @@ import java.util.List;
 public class AddressController {
 
     private final AddressService addressService;
+
     // Constructor injection for AddressService
     public AddressController(AddressService addressService) {
         this.addressService = addressService;
@@ -26,6 +27,7 @@ public class AddressController {
         Address saved = addressService.saveAddress(address);
         return ResponseEntity.ok(saved);
     }
+
     // Update an existing address by ID
     @PutMapping("/{id}")
     public ResponseEntity<Address> updateAddress(@PathVariable int id, @RequestBody Address updatedAddress) {
@@ -58,4 +60,13 @@ public class AddressController {
             return ResponseEntity.badRequest().body("Address cannot be deleted. It may still be in use.");
         }
     }
+
+    // @GetMapping("/customer/{customerId}")
+    // public ResponseEntity<List<Address>> getAddressesByCustomerId(@PathVariable int id) {
+    //     List<Address> addresses = addressService.getAddressById(id);
+    //     return addresses.isEmpty()
+    //             ? ResponseEntity.noContent().build()
+    //             : ResponseEntity.ok(addresses);
+    // }
+
 }
