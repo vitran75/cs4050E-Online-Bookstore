@@ -30,13 +30,8 @@ const ManageUsers = () => {
         <div className="logo">Manage Users</div>
         <Link to="/admin" className="back-link">&larr; Back to Admin</Link>
       </header>
-
       <main>
-      return (
-  <>
-    <h1 style={{ color: 'white' }}>Manage Users Page Loaded</h1>
-  </>
-);
+      <h1 style={{ color: 'white' }}>Manage Users</h1>
         <h1>User List</h1>
         <table className="admin-table">
           <thead>
