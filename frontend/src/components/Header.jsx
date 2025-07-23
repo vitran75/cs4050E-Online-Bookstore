@@ -1,19 +1,18 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import '../styles/Header.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import {jwtDecode} from 'jwt-decode';
 
 const Header = ({ title = 'BookByte' }) => {
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
   let isLoggedIn = false;
 
   try {
     if (token) {
-      const decoded = jwtDecode(token);
-      isLoggedIn = decoded && decoded.exp * 1000 > Date.now(); // token still valid
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      isLoggedIn = payload && payload.exp * 1000 > Date.now();
     }
   } catch (err) {
     isLoggedIn = false;
@@ -27,28 +26,37 @@ const Header = ({ title = 'BookByte' }) => {
   };
 
   return (
-    <header className="header">
-      <div className="logo">{title}</div>
-      <div className="header-icons">
-        {!isLoggedIn ? (
-          <>
-            <Link to="/login" className="small-btn">Sign-in</Link> 
-            <Link to="/signup" className="small-btn">Sign-up</Link>
-          </>
-        ) : (
-          <button onClick={handleLogout} className="small-btn">Sign-out</button>
-        )}
+      <header className="header">
+        <div className="header-content">
+          <div className="logo-container">
+            <h1 className="logo">{title}</h1>
+            <a href="/store" className="nav-link">Back to Store</a>
+          </div>
 
-        <Link to="/checkout" className="icon-btn" title="Cart">
-          <i className="fas fa-shopping-cart"></i>
-        </Link>
-        <Link to="/profile" className="icon-btn" title="Profile">
-          <i className="fas fa-user-circle"></i>
-        </Link>
+          <div className="nav-links">
+            {isLoggedIn ? (
+                <>
+                  <div className="icon-container" onClick={() => navigate('/profile')}>
+                    <FontAwesomeIcon icon={faUser} size="lg" />
+                    <span className="icon-label">Profile</span>
+                  </div>
 
-        <Link to="/" className="back-link">← Back to Store</Link>
-      </div>
-    </header>
+                  <div className="icon-container" onClick={() => navigate('/checkout')}>
+                    <FontAwesomeIcon icon={faShoppingCart} size="lg" />
+                    <span className="icon-label">Cart</span>
+                  </div>
+
+                  <button className="btn" onClick={handleLogout}>Sign Out</button>
+                </>
+            ) : (
+                <>
+                  <button className="btn" onClick={() => navigate('/login')}>Sign In</button>
+                  <button className="btn" onClick={() => navigate('/signup')}>Sign Up</button>
+                </>
+            )}
+          </div>
+        </div>
+      </header>
   );
 };
 

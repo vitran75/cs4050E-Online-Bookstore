@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import BookCard from '../components/BookCard';
+import Header from '../components/Header'; // ✅ Use the shared Header
 import '../styles/Home.css';
 import '../styles/Header.css';
 import axios from 'axios';
@@ -38,20 +37,20 @@ const Home = () => {
   const filteredBooks = (list) => {
     if (!searchTerm) return list;
 
+    const term = searchTerm.toLowerCase();
     return list.filter((book) => {
-      const term = searchTerm.toLowerCase();
-      switch(searchFilter) {
+      switch (searchFilter) {
         case 'title':
           return book.title.toLowerCase().includes(term);
         case 'author':
           return book.author.toLowerCase().includes(term);
         case 'genre':
-          return book.genre.toLowerCase().includes(term);
+          return book.genre?.toLowerCase().includes(term);
         case 'all':
           return (
               book.title.toLowerCase().includes(term) ||
               book.author.toLowerCase().includes(term) ||
-              (book.genre && book.genre.toLowerCase().includes(term))
+              book.genre?.toLowerCase().includes(term)
           );
         default:
           return true;
@@ -63,32 +62,9 @@ const Home = () => {
     alert(`Add book ${bookId} to cart`);
   };
 
-  const Header = () => (
-      <header>
-        <div className="logo-container">
-          <h1 className="logo">BookByte</h1>
-          <a href="/store" className="nav-link">Back to Store</a>
-        </div>
-
-        <div className="nav-links">
-          <div className="icon-container">
-            <FontAwesomeIcon icon={faUser} size="lg" />
-            <span className="icon-label">Profile</span>
-          </div>
-
-          <div className="icon-container">
-            <FontAwesomeIcon icon={faShoppingCart} size="lg" />
-            <span className="icon-label">Cart</span>
-          </div>
-
-          <button className="btn">Sign Out</button>
-        </div>
-      </header>
-  );
-
   return (
       <div>
-        <Header />
+        <Header /> {/* ✅ Global, working Header */}
         <main>
           <div className="search-container">
             <div className="search-bar-wrapper">
@@ -109,9 +85,7 @@ const Home = () => {
                 <option value="genre">Genre</option>
                 <option value="all">All</option>
               </select>
-              <button className="search-button">
-                Search
-              </button>
+              <button className="search-button">Search</button>
             </div>
           </div>
 
