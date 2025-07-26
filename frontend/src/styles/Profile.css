@@ -1,20 +1,51 @@
+/* Base page styling */
 .profile-page {
-    padding: 2rem;
-    background: #111;
-    color: #f1f1f1;
     min-height: 100vh;
+    background-color: #111; /* Dark background */
+    color: #f1f1f1;          /* Light text */
+    padding: 2rem 1rem;
 }
 
+/* Main heading */
 .profile-page h2 {
     font-size: 2rem;
-    color: #e50914;
+    font-weight: bold;
+    color: #e50914;  /* Netflix red */
     margin-bottom: 1.5rem;
 }
 
+/* Section containers */
 .profile-section {
-    background: #222;
+    background-color: #1e1e1e; /* Slightly lighter than base */
     padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     margin-bottom: 2rem;
+}
+
+/* Section titles */
+.profile-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #f87171; /* subtle red */
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .profile-page {
+        padding: 1.25rem;
+    }
+
+    .profile-page h2 {
+        font-size: 1.75rem;
+    }
+
+    .profile-section {
+        padding: 1rem;
+    }
+
+    .profile-section h3 {
+        font-size: 1.125rem;
+    }
 }

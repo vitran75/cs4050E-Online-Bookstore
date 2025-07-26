@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BookCard from '../components/BookCard';
-import Header from '../components/Header'; // ✅ Use the shared Header
+import Header from '../components/Header';
 import '../styles/Home.css';
 import '../styles/Header.css';
 import axios from 'axios';
@@ -63,8 +63,10 @@ const Home = () => {
   };
 
   return (
-      <div>
-        <Header /> {/* ✅ Global, working Header */}
+      <div className="home-page">
+        {/* Full-width header with wrapper */}
+        <Header />
+
         <main>
           <div className="search-container">
             <div className="search-bar-wrapper">
@@ -95,7 +97,16 @@ const Home = () => {
             <div className="book-grid">
               {filteredBooks(featured).length > 0 ? (
                   filteredBooks(featured).map((book) => (
-                      <BookCard key={book.id} {...book} onAddToCart={handleAddToCart} />
+                      <BookCard
+                          key={book.id}
+                          id={book.id}
+                          title={book.title}
+                          author={book.author}
+                          price={book.price}
+                          coverImageUrl={book.coverImageUrl}
+                          onAddToCart={handleAddToCart}
+                      />
+
                   ))
               ) : (
                   <p>No featured books found.</p>
@@ -109,7 +120,16 @@ const Home = () => {
             <div className="book-grid">
               {filteredBooks(upcoming).length > 0 ? (
                   filteredBooks(upcoming).map((book) => (
-                      <BookCard key={book.id} {...book} onAddToCart={() => {}} />
+                      <BookCard
+                          key={book.id}
+                          id={book.id}
+                          title={book.title}
+                          author={book.author}
+                          price={book.price}
+                          coverImageUrl={book.coverImageUrl}
+                          onAddToCart={handleAddToCart}
+                      />
+
                   ))
               ) : (
                   <p>No upcoming books found.</p>
@@ -123,7 +143,16 @@ const Home = () => {
             <div className="book-grid">
               {filteredBooks(books).length > 0 ? (
                   filteredBooks(books).map((book) => (
-                      <BookCard key={book.id} {...book} onAddToCart={() => {}} />
+                      <BookCard
+                          key={book.id}
+                          id={book.id}
+                          title={book.title}
+                          author={book.author}
+                          price={book.price}
+                          coverImageUrl={book.coverImageUrl}
+                          onAddToCart={handleAddToCart}
+                      />
+
                   ))
               ) : (
                   <p>No books found.</p>

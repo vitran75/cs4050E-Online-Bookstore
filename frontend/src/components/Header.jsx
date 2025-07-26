@@ -54,10 +54,7 @@ const Header = ({ title = 'BookByte' }) => {
               )}
             </div>
 
-            <button
-                className="btn back-to-store"
-                onClick={() => navigate('/')}
-            >
+            <button className="btn back-to-store" onClick={() => navigate('/')}>
               Back to Store
             </button>
           </div>

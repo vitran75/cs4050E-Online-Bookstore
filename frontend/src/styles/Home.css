@@ -1,25 +1,30 @@
+
 /* Base Styles - Red & Black Theme */
 .home-page {
     font-family: 'Arial', sans-serif;
     color: #000000; /* Black text */
-    background-color: #ffffff;
+
     max-width: 1200px;
     margin: 0 auto;
     padding: 0;
 }
 
-/* Header - Black with Red Accents */
+/* Full-width wrapper */
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background-color: #000000;
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    width: 100%;
+    background-color: #1a1a1a;
+    color: #ff4444;
+    border-bottom: 2px solid #ff0000;
+    padding: 1rem 0;
+    box-sizing: border-box;
 }
+
+.header-inner {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0; /* no margin or padding limiting width */
+}
+
 
 .logo {
     color: #ff0000; /* Bright red */
@@ -130,6 +135,12 @@
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+}
+.book-author {
+    font-style: italic;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+    color: #ccc;
 }
 
 /* Section Headers - Red underline on black */
