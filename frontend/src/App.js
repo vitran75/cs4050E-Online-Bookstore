@@ -16,6 +16,7 @@ import OrderConfirmation from './components/OrderConfirmation';
 import OrderHistory from './components/OrderHistory';
 import PrivateRoute from './pages/PrivateRoute';
 import RoleRoute from './components/RoleRoute';
+import BookDetails from "./pages/BookDetails";
 
 const App = () => {
   return (
@@ -45,7 +46,7 @@ const App = () => {
             <Route path="/order-confirmation" element={
               <PrivateRoute><OrderConfirmation /></PrivateRoute>
             } />
-
+            <Route path="/book/:id" element={<BookDetails />} />
             {/* Admin routes (role-restricted) */}
             <Route path="/admin" element={
               <RoleRoute allowedRole="ADMIN"><AdminPanel /></RoleRoute>
