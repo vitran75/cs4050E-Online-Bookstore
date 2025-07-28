@@ -47,7 +47,6 @@ const App = () => {
               <PrivateRoute><OrderConfirmation /></PrivateRoute>
             } />
             <Route path="/book/:id" element={<BookDetails />} />
-            {/* Admin routes (role-restricted) */}
             <Route path="/admin" element={
               <RoleRoute allowedRole="ADMIN"><AdminPanel /></RoleRoute>
             } />
