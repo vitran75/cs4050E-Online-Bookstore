@@ -36,7 +36,8 @@ public class Book {
     private BigDecimal price;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+
     private List<BookPrice> prices;
 
 
@@ -163,9 +164,11 @@ public List<BookPrice> getPrices() {
     return prices;
 }
 
-public void setPrices(List<BookPrice> prices) {
-    this.prices = prices;
-}
+    public void setPrices(List<BookPrice> prices) {
+        this.prices = prices;
+        this.afterLoad();
+    }
+
 
 
 public BigDecimal getPrice() {

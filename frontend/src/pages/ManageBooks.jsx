@@ -8,8 +8,10 @@ const ManageBooks = () => {
   const [editingBook, setEditingBook] = useState(null);
   const [formData, setFormData] = useState({
     title: '', authors: '', genre: '', isbn: '', publisher: '',
-    coverImageUrl: '', samplePdfUrl: '', description: ''
+    coverImageUrl: '', samplePdfUrl: '', description: '',
+    prices: [{ formatType: 'HARDCOVER', price: '' }]
   });
+
 
   useEffect(() => {
     fetch('http://localhost:8080/api/books')
@@ -33,11 +35,14 @@ const ManageBooks = () => {
   const resetForm = () => {
     setFormData({
       title: '', authors: '', genre: '', isbn: '', publisher: '',
-      coverImageUrl: '', samplePdfUrl: '', description: ''
+      coverImageUrl: '', samplePdfUrl: '', description: '',
+      prices: [{ formatType: 'HARDCOVER', price: '' }]
     });
     setEditingBook(null);
     setIsFormVisible(false);
   };
+
+
 
   const handleEdit = (book) => {
     setFormData({
@@ -48,26 +53,31 @@ const ManageBooks = () => {
       publisher: book.publisher || '',
       coverImageUrl: book.coverImageUrl || '',
       samplePdfUrl: book.samplePdfUrl || '',
-      description: book.description || ''
+      description: book.description || '',
+      prices: book.prices?.length > 0
+          ? [book.prices[0]]
+          : [{ formatType: 'HARDCOVER', price: '' }]
     });
+
     setEditingBook(book);
     setIsFormVisible(true);
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
-    
+
     try {
-      const url = editingBook 
+      const url = editingBook
         ? `http://localhost:8080/api/books/${editingBook.id}`
         : 'http://localhost:8080/api/books';
-      
+
       const method = editingBook ? 'PUT' : 'POST';
-      
+
       const res = await fetch(url, {
         method,
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
@@ -80,15 +90,15 @@ const ManageBooks = () => {
       }
 
       const bookData = JSON.parse(text);
-      
+
       if (editingBook) {
-        setBooks(prevBooks => 
+        setBooks(prevBooks =>
           prevBooks.map(book => book.id === editingBook.id ? bookData : book)
         );
       } else {
         setBooks(prevBooks => [...prevBooks, bookData]);
       }
-      
+
       resetForm();
     } catch (err) {
       alert(err.message);
@@ -97,21 +107,21 @@ const ManageBooks = () => {
 
   const handleDelete = async (id) => {
     const token = localStorage.getItem('token');
-    
+
     if (!window.confirm('Are you sure you want to delete this book?')) return;
-    
+
     try {
-      const res = await fetch(`http://localhost:8080/api/books/${id}`, { 
+      const res = await fetch(`http://localhost:8080/api/books/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!res.ok) {
         throw new Error('Failed to delete book');
       }
-      
+
       setBooks(prevBooks => prevBooks.filter(book => book.id !== id));
     } catch (err) {
       alert('Failed to delete book: ' + err.message);
@@ -142,7 +152,7 @@ const ManageBooks = () => {
       <main className="manage-books-main">
         {/* Add Book Button */}
         <div className="action-bar">
-          <button 
+          <button
             onClick={() => setIsFormVisible(!isFormVisible)}
             className="btn btn-primary"
           >
@@ -150,7 +160,7 @@ const ManageBooks = () => {
             Add New Book
           </button>
           {isFormVisible && (
-            <button 
+            <button
               onClick={resetForm}
               className="btn btn-secondary"
             >
@@ -173,14 +183,14 @@ const ManageBooks = () => {
                     <i className="fas fa-book"></i>
                     Title *
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="title"
-                    name="title" 
-                    placeholder="Enter book title" 
-                    value={formData.title} 
-                    onChange={handleChange} 
-                    required 
+                    name="title"
+                    placeholder="Enter book title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
 
@@ -189,14 +199,14 @@ const ManageBooks = () => {
                     <i className="fas fa-user-edit"></i>
                     Authors *
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="authors"
-                    name="authors" 
-                    placeholder="Enter author names" 
-                    value={formData.authors} 
-                    onChange={handleChange} 
-                    required 
+                    name="authors"
+                    placeholder="Enter author names"
+                    value={formData.authors}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
 
@@ -205,13 +215,13 @@ const ManageBooks = () => {
                     <i className="fas fa-tags"></i>
                     Genre
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="genre"
-                    name="genre" 
-                    placeholder="Enter genre" 
-                    value={formData.genre} 
-                    onChange={handleChange} 
+                    name="genre"
+                    placeholder="Enter genre"
+                    value={formData.genre}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -220,13 +230,13 @@ const ManageBooks = () => {
                     <i className="fas fa-barcode"></i>
                     ISBN
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="isbn"
-                    name="isbn" 
-                    placeholder="Enter ISBN" 
-                    value={formData.isbn} 
-                    onChange={handleChange} 
+                    name="isbn"
+                    placeholder="Enter ISBN"
+                    value={formData.isbn}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -235,13 +245,13 @@ const ManageBooks = () => {
                     <i className="fas fa-building"></i>
                     Publisher
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="publisher"
-                    name="publisher" 
-                    placeholder="Enter publisher" 
-                    value={formData.publisher} 
-                    onChange={handleChange} 
+                    name="publisher"
+                    placeholder="Enter publisher"
+                    value={formData.publisher}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -250,13 +260,13 @@ const ManageBooks = () => {
                     <i className="fas fa-image"></i>
                     Cover Image URL
                   </label>
-                  <input 
-                    type="url" 
+                  <input
+                    type="url"
                     id="coverImageUrl"
-                    name="coverImageUrl" 
-                    placeholder="https://example.com/cover.jpg" 
-                    value={formData.coverImageUrl} 
-                    onChange={handleChange} 
+                    name="coverImageUrl"
+                    placeholder="https://example.com/cover.jpg"
+                    value={formData.coverImageUrl}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -265,13 +275,13 @@ const ManageBooks = () => {
                     <i className="fas fa-file-pdf"></i>
                     Sample PDF URL
                   </label>
-                  <input 
-                    type="url" 
+                  <input
+                    type="url"
                     id="samplePdfUrl"
-                    name="samplePdfUrl" 
-                    placeholder="https://example.com/sample.pdf" 
-                    value={formData.samplePdfUrl} 
-                    onChange={handleChange} 
+                    name="samplePdfUrl"
+                    placeholder="https://example.com/sample.pdf"
+                    value={formData.samplePdfUrl}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -280,14 +290,57 @@ const ManageBooks = () => {
                     <i className="fas fa-align-left"></i>
                     Description
                   </label>
-                  <textarea 
+                  <textarea
                     id="description"
-                    name="description" 
-                    rows="4" 
-                    placeholder="Enter book description" 
-                    value={formData.description} 
-                    onChange={handleChange} 
+                    name="description"
+                    rows="4"
+                    placeholder="Enter book description"
+                    value={formData.description}
+                    onChange={handleChange}
                   />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="formatType">
+                    <i className="fas fa-book-reader"></i>
+                    Format Type *
+                  </label>
+                  <select
+                      id="formatType"
+                      name="formatType"
+                      value={formData.prices?.[0]?.formatType || 'HARDCOVER'}
+                      onChange={(e) => {
+                        const updatedPrices = [{ ...(formData.prices?.[0] || {}), formatType: e.target.value }];
+                        setFormData(prev => ({ ...prev, prices: updatedPrices }));
+                      }}
+                      required
+                  >
+
+                  <option value="HARDCOVER">Hardcover</option>
+                    <option value="PAPERBACK">Paperback</option>
+                    <option value="EBOOK">eBook</option>
+                  </select>
+
+                </div>
+                <div className="form-group">
+                  <label htmlFor="price">
+                    <i className="fas fa-dollar-sign"></i>
+                    Price *
+                  </label>
+                  <input
+                      type="number"
+                      id="price"
+                      name="price"
+                      step="0.01"
+                      placeholder="Enter price"
+                      value={formData.prices?.[0]?.price || ''}
+                      onChange={(e) => {
+                        const updatedPrices = [{ ...(formData.prices?.[0] || {}), price: e.target.value }];
+                        setFormData(prev => ({ ...prev, prices: updatedPrices }));
+                      }}
+                      required
+                  />
+
+
                 </div>
               </div>
 
@@ -319,7 +372,7 @@ const ManageBooks = () => {
               <i className="fas fa-book-open"></i>
               <h3>No Books Found</h3>
               <p>Start building your library by adding your first book!</p>
-              <button 
+              <button
                 onClick={() => setIsFormVisible(true)}
                 className="btn btn-primary"
               >
@@ -333,8 +386,8 @@ const ManageBooks = () => {
                 <div key={book.id} className="book-card">
                   <div className="book-cover">
                     {book.coverImageUrl ? (
-                      <img 
-                        src={book.coverImageUrl} 
+                      <img
+                        src={book.coverImageUrl}
                         alt={book.title}
                         onError={(e) => {
                           e.target.style.display = 'none';
@@ -346,7 +399,7 @@ const ManageBooks = () => {
                       <i className="fas fa-book"></i>
                     </div>
                   </div>
-                  
+
                   <div className="book-info">
                     <h3 className="book-title">{book.title}</h3>
                     <p className="book-authors">
@@ -367,8 +420,8 @@ const ManageBooks = () => {
                     )}
                     {book.description && (
                       <p className="book-description">
-                        {book.description.length > 100 
-                          ? `${book.description.substring(0, 100)}...` 
+                        {book.description.length > 100
+                          ? `${book.description.substring(0, 100)}...`
                           : book.description
                         }
                       </p>
@@ -376,14 +429,14 @@ const ManageBooks = () => {
                   </div>
 
                   <div className="book-actions">
-                    <button 
+                    <button
                       onClick={() => handleEdit(book)}
                       className="btn btn-edit"
                       title="Edit book"
                     >
                       <i className="fas fa-edit"></i>
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDelete(book.id)}
                       className="btn btn-delete"
                       title="Delete book"

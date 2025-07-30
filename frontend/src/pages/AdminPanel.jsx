@@ -5,10 +5,7 @@ import '../styles/AdminPanel.css';
 const AdminPanel = () => {
   return (
     <>
-      <header className="header">
-        <div className="logo">Admin View</div>
-        <Link to="/" className="back-link">&larr; Back to Store</Link>
-      </header>
+
 
       <main>
         <h1>Admin Dashboard</h1>

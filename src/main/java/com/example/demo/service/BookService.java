@@ -81,17 +81,37 @@ public class BookService {
     }
 
 
+    @Transactional
     public Book updateBook(int id, Book updatedBook) {
-        return bookRepository.findById(id).map(book -> {
-            if (updatedBook.getTitle() != null) book.setTitle(updatedBook.getTitle());
-            if (updatedBook.getGenre() != null) book.setGenre(updatedBook.getGenre());
-            if (updatedBook.getAuthors() != null) book.setAuthors(updatedBook.getAuthors());
-            if (updatedBook.getPublisher() != null) book.setPublisher(updatedBook.getPublisher());
-            if (updatedBook.getIsbn() != null) book.setIsbn(updatedBook.getIsbn());
-            if (updatedBook.getCoverImageUrl() != null) book.setCoverImageUrl(updatedBook.getCoverImageUrl());
-            return bookRepository.save(book);
+        return bookRepository.findById(id).map(existingBook -> {
+
+            // Update basic fields
+            if (updatedBook.getTitle() != null) existingBook.setTitle(updatedBook.getTitle());
+            if (updatedBook.getGenre() != null) existingBook.setGenre(updatedBook.getGenre());
+            if (updatedBook.getAuthors() != null) existingBook.setAuthors(updatedBook.getAuthors());
+            if (updatedBook.getPublisher() != null) existingBook.setPublisher(updatedBook.getPublisher());
+            if (updatedBook.getIsbn() != null) existingBook.setIsbn(updatedBook.getIsbn());
+            if (updatedBook.getCoverImageUrl() != null) existingBook.setCoverImageUrl(updatedBook.getCoverImageUrl());
+            if (updatedBook.getSamplePdfUrl() != null) existingBook.setSamplePdfUrl(updatedBook.getSamplePdfUrl());
+            if (updatedBook.getDescription() != null) existingBook.setDescription(updatedBook.getDescription());
+
+
+            if (updatedBook.getPrices() != null && !updatedBook.getPrices().isEmpty()) {
+                existingBook.getPrices().clear();
+                for (var newPrice : updatedBook.getPrices()) {
+                    newPrice.setBook(existingBook);
+                    existingBook.getPrices().add(newPrice);
+                }
+
+
+                existingBook.setPrices(existingBook.getPrices()); // triggers price recalculation via your setter
+            }
+
+            return bookRepository.save(existingBook); // 💾 Cascade saves prices too
         }).orElse(null);
     }
+
+
 
     public boolean deleteBook(int id) {
         if (bookRepository.existsById(id)) {

@@ -319,4 +319,23 @@ public class AdminController {
             return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/setup-admin")
+    public ResponseEntity<String> setupAdmin() {
+        if (!adminService.emailExists("admin@gmail.com")) {
+            Admin admin = new Admin(
+                    "Admin",
+                    "User",
+                    "admin@gmail.com",
+                    "adminpassword"
+            );
+            adminService.createAdmin(admin);
+            return ResponseEntity.ok("Admin created.");
+        } else {
+            return ResponseEntity.ok("Admin already exists.");
+        }
+    }
+
+
+
 }
