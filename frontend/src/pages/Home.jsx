@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BookCard from '../components/BookCard';
-import Header from '../components/Header';
 import '../styles/Home.css';
 import '../styles/Header.css';
 import axios from 'axios';
 
-const Home = () => {
+const Home = ({ onAddToCart }) => {
   const [books, setBooks] = useState([]);
   const [featured, setFeatured] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
@@ -58,15 +57,8 @@ const Home = () => {
     });
   };
 
-  const handleAddToCart = (bookId) => {
-    alert(`Add book ${bookId} to cart`);
-  };
-
   return (
       <div className="home-page">
-        {/* Full-width header with wrapper */}
-        <Header />
-
         <main>
           <div className="search-container">
             <div className="search-bar-wrapper">
@@ -91,7 +83,7 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Featured Section */}
+          {/* Featured Books */}
           <section>
             <h2>FEATURED BOOKS</h2>
             <div className="book-grid">
@@ -101,12 +93,11 @@ const Home = () => {
                           key={book.id}
                           id={book.id}
                           title={book.title}
-                          author={book.author}
+                          authors={book.authors}
                           price={book.price}
                           coverImageUrl={book.coverImageUrl}
-                          onAddToCart={handleAddToCart}
+                          onAddToCart={() => onAddToCart(book)}
                       />
-
                   ))
               ) : (
                   <p>No featured books found.</p>
@@ -114,7 +105,7 @@ const Home = () => {
             </div>
           </section>
 
-          {/* Coming Soon Section */}
+          {/* Coming Soon */}
           <section>
             <h2>COMING SOON</h2>
             <div className="book-grid">
@@ -124,12 +115,11 @@ const Home = () => {
                           key={book.id}
                           id={book.id}
                           title={book.title}
-                          author={book.author}
+                          authors={book.authors}
                           price={book.price}
                           coverImageUrl={book.coverImageUrl}
-                          onAddToCart={handleAddToCart}
+                          onAddToCart={() => onAddToCart(book)}
                       />
-
                   ))
               ) : (
                   <p>No upcoming books found.</p>
@@ -137,7 +127,7 @@ const Home = () => {
             </div>
           </section>
 
-          {/* All Books Section */}
+          {/* All Books */}
           <section>
             <h2>ALL BOOKS</h2>
             <div className="book-grid">
@@ -147,12 +137,11 @@ const Home = () => {
                           key={book.id}
                           id={book.id}
                           title={book.title}
-                          author={book.author}
+                          authors={book.authors}
                           price={book.price}
                           coverImageUrl={book.coverImageUrl}
-                          onAddToCart={handleAddToCart}
+                          onAddToCart={() => onAddToCart(book)}
                       />
-
                   ))
               ) : (
                   <p>No books found.</p>

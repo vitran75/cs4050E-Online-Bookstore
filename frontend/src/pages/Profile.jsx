@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import EditCustomerForm from '../components/EditCustomerForm';
 import OrderHistory from '../components/OrderHistory';
-import Header from '../components/Header'; // ✅ Include the shared header
+
 
 const Profile = () => {
     const [user, setUser] = useState(null);
@@ -20,7 +20,7 @@ const Profile = () => {
     if (!user) {
         return (
             <div className="w-full min-h-screen flex flex-col items-center justify-center bg-neutral-900 text-white">
-                <Header />
+
                 <p className="text-lg mt-10">Loading profile...</p>
             </div>
         );
@@ -28,7 +28,7 @@ const Profile = () => {
 
     return (
         <div className="profile-page">
-            <Header />
+
             <div className="max-w-4xl mx-auto space-y-10 pt-10 px-4">
                 <h2 className="text-3xl font-bold text-red-500">
                     Welcome, {user.firstName || 'Customer'}!

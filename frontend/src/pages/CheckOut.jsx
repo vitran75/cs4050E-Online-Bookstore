@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
+
 import { jwtDecode } from 'jwt-decode'; 
 
 import '../styles/Checkout.css';
@@ -62,10 +62,11 @@ const Checkout = () => {
       paymentCardId: savedCard.id,
       addressId: savedAddress.id,
       orderItems: cartItems.map(item => ({
-        bookId: item.bookId,
+        bookId: item.id,
         quantity: item.quantity,
-        price: item.unitPrice,
+        price: item.price,
       })),
+
     };
 
     try {
@@ -110,7 +111,7 @@ const Checkout = () => {
   if (confirmationShown) {
     return (
       <div>
-        <Header title="Checkout" />
+
         <div className="confirmation-message">
           <i className="fas fa-check-circle"></i>
           <h2>Order Confirmed!</h2>
@@ -123,7 +124,6 @@ const Checkout = () => {
 
   return (
     <div>
-      <Header title="Checkout" />
       <div className="checkout-container">
         {/* === Payment Step === */}
         <div className="step">
@@ -168,10 +168,11 @@ const Checkout = () => {
         <div className="step">
           <h2>Review Order</h2>
           {cartItems.map(item => (
-            <div key={item.bookId}>
-              Book #{item.bookId} - Qty: {item.quantity} - ${item.unitPrice * item.quantity}
-            </div>
+              <div key={item.id} className="review-item">
+                <strong>{item.title}</strong> — Qty: {item.quantity} — ${item.price * item.quantity}
+              </div>
           ))}
+
           <button className="btn-primary" onClick={submitPayment}>Complete Order</button>
         </div>
       </div>

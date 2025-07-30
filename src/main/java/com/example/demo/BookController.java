@@ -1,13 +1,18 @@
 package com.example.demo;
 
-import com.example.demo.model.*;
-import com.example.demo.service.*;
+import com.example.demo.dto.BookDTO;
+import com.example.demo.mapper.BookMapper;
+import com.example.demo.model.Book;
+import com.example.demo.model.BookReview;
+import com.example.demo.service.BookService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/books")
@@ -16,6 +21,13 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
+
+    @GetMapping
+    public List<BookDTO> getAllBooks() {
+        return bookService.getAllBooks().stream()
+                .map(BookMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
     @GetMapping("/search")
     public List<Book> searchBooks(
@@ -27,11 +39,6 @@ public class BookController {
             @RequestParam(required = false) String isbn
     ) {
         return bookService.searchBooks(id, title, genre, author, publisher, isbn);
-    }
-
-    @GetMapping
-    public List<Book> getAllBooks() {
-        return bookService.getAllBooks();
     }
 
     @GetMapping("/{id}")
@@ -72,4 +79,3 @@ public class BookController {
         return bookService.getAllPublishers();
     }
 }
-

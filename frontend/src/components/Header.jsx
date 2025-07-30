@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import '../styles/Header.css';
 
-const Header = ({ title = 'BookByte' }) => {
+const Header = ({ title = 'BookByte', onCartClick }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   let isLoggedIn = false;
@@ -39,7 +39,7 @@ const Header = ({ title = 'BookByte' }) => {
                       <span className="icon-label">Profile</span>
                     </div>
 
-                    <div className="icon-container" onClick={() => navigate('/checkout')}>
+                    <div className="icon-container" onClick={onCartClick}>
                       <FontAwesomeIcon icon={faShoppingCart} size="lg" />
                       <span className="icon-label">Cart</span>
                     </div>

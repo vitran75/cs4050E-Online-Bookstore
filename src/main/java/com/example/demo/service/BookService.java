@@ -70,8 +70,16 @@ public class BookService {
     }
 
     public Book addBook(Book book) {
+        // Link each BookPrice back to the parent Book
+        if (book.getPrices() != null) {
+            for (var price : book.getPrices()) {
+                price.setBook(book);
+            }
+        }
+
         return bookRepository.save(book);
     }
+
 
     public Book updateBook(int id, Book updatedBook) {
         return bookRepository.findById(id).map(book -> {

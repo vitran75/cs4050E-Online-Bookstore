@@ -1,9 +1,12 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "book")   
@@ -28,10 +31,15 @@ public class Book {
 
     @Transient
     private List<BookReview> reviews;
-    
+
+    @Transient
+    private BigDecimal price;
+
+    @JsonManagedReference
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BookPrice> prices;
-    
+
+
 
     public Book() {}
 
@@ -47,14 +55,23 @@ public class Book {
         this.isbn = isbn;
     }
 
+
     @PostLoad
-    private void parseAuthors() {
+
+    private void afterLoad() {
+        // Author parsing
         if (this.authors != null) {
             this.authorList = Arrays.stream(this.authors.split(", "))
-                                    .map(String::trim)
-                                    .collect(Collectors.toList());
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+        }
+
+        // Default price extraction
+        if (prices != null && !prices.isEmpty()) {
+            this.price = prices.get(0).getPrice(); // or filter by format type
         }
     }
+
 
     public List<String> getAuthorList() {
         return authorList;
@@ -97,7 +114,7 @@ public class Book {
 
     public void setAuthors(String authors) {
         this.authors = authors;
-        parseAuthors();
+        afterLoad();
     }
 
     public String getPublisher() {
@@ -140,6 +157,8 @@ public class Book {
         this.isbn = isbn;
     }
 
+
+
 public List<BookPrice> getPrices() {
     return prices;
 }
@@ -147,4 +166,11 @@ public List<BookPrice> getPrices() {
 public void setPrices(List<BookPrice> prices) {
     this.prices = prices;
 }
+
+
+public BigDecimal getPrice() {
+        return price;
+}
+
+
 } 
