@@ -141,36 +141,42 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(mime, true);
             applySenderDetails(helper);
 
-            int itemCount = items.size();
-            BigDecimal itemSubtotal = items.stream()
-                    .map(i -> i.getUnitPrice() != null ? i.getUnitPrice() : BigDecimal.ZERO)
+            int itemCount = items.stream().mapToInt(OrderItem::getQuantity).sum();
+
+            BigDecimal subtotal = items.stream()
+                    .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             String orderDate = orderTime.format(DateTimeFormatter.ofPattern("EEEE, MMMM d yyyy 'at' h:mm a"));
 
             StringBuilder itemList = new StringBuilder("<ul>");
             for (OrderItem item : items) {
+                String title = item.getBook().getTitle();
+                int qty = item.getQuantity();
+                BigDecimal price = item.getUnitPrice().multiply(BigDecimal.valueOf(qty));
                 itemList.append("<li>")
-                        .append(item.getBook()).append(" – $")
-                        .append(item.getBook()).append("</li>");
+                        .append(title)
+                        .append(" — Qty: ").append(qty)
+                        .append(" — $").append(df.format(price))
+                        .append("</li>");
             }
             itemList.append("</ul>");
 
-            String body = "<h2>📦 Order Confirmation</h2>"
-                        + "<p>Hi " + customerName + ",</p>"
-                        + "<p>Your order <b>#" + orderId + "</b> has been placed on " + orderDate + ".</p>"
-                        + "<p><b>Items (" + itemCount + "):</b></p>"
-                        + itemList
-                        + "<p><b>Subtotal:</b> $" + df.format(itemSubtotal) + "</p>"
-                        + "<p><b>Shipping:</b> $" + df.format(shipping) + "</p>"
-                        + "<p><b>Tax:</b> $" + df.format(tax) + "</p>"
-                        + "<p><b>Discount:</b> -$" + df.format(discount) + "</p>"
-                        + "<hr>"
-                        + "<p><b>Total Charged:</b> $" + df.format(total) + "</p>"
-                        + "<p>Thanks for shopping with Online Bookstore!</p>";
+            String body = "<h2>Order Confirmation</h2>"
+                    + "<p>Hi " + customerName + ",</p>"
+                    + "<p>Your order <b>#" + orderId + "</b> has been placed on " + orderDate + ".</p>"
+                    + "<p><b>Items (" + itemCount + "):</b></p>"
+                    + itemList
+                    + "<p><b>Subtotal:</b> $" + df.format(subtotal) + "</p>"
+                    + "<p><b>Shipping:</b> $" + df.format(shipping) + "</p>"
+                    + "<p><b>Tax:</b> $" + df.format(tax) + "</p>"
+                    + "<p><b>Discount:</b> -$" + df.format(discount) + "</p>"
+                    + "<hr>"
+                    + "<p><b>Total Charged:</b> $" + df.format(total) + "</p>"
+                    + "<p>Thanks for shopping with Online Bookstore!</p>";
 
             helper.setTo(recipient);
-            helper.setSubject("📦 Order Confirmation – Order #" + orderId);
+            helper.setSubject("Order Confirmation – Order #" + orderId);
             helper.setText(body, true);
 
             mailSender.send(mime);
@@ -179,6 +185,7 @@ public class EmailService {
             throw new RuntimeException("Unable to send order confirmation email.", e);
         }
     }
+
 
     public void sendOrderRefundEmail(String recipient, String customerName, int orderId, String bookTitle, LocalDateTime orderDate, BigDecimal refundAmount) {
         try {

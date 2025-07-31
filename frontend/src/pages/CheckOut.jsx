@@ -77,24 +77,33 @@ const Checkout = () => {
     }
 
     const orderPayload = {
-      customerId,
-      paymentCardId: finalPaymentInfo.cardId,
-      addressId: finalPaymentInfo.billingAddress.id,
+      customer: { userId: customerId },
+      paymentCard: { cardId: finalPaymentInfo.cardId },
       orderItems: cartItems.map(item => ({
-        bookId: item.id,
+        book: { id: item.id },
         quantity: item.quantity,
-        price: item.price,
-      })),
+        unitPrice: item.price
+      }))
     };
 
+
     try {
+      const token = localStorage.getItem('token');
+
       const res = await fetch("http://localhost:8080/api/orders", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify(orderPayload),
       });
 
-      if (!res.ok) throw new Error("Failed to place order");
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Order failed response:", errorText);
+        throw new Error(errorText || "Failed to place order");
+      }
       
       localStorage.removeItem('cart');
       setConfirmationShown(true);
