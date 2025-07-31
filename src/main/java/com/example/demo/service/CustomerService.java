@@ -1,22 +1,23 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Customer;
-import com.example.demo.model.Address;
-import com.example.demo.model.PaymentCard;
-import com.example.demo.PaymentCardController.PaymentCardRequest;
-import com.example.demo.repository.CustomerRepository;
-import com.example.demo.repository.AddressRepository;
-import com.example.demo.repository.PaymentCardRepository;
-import com.example.demo.repository.AdminRepository;
-import com.example.demo.util.EncryptionUtil;
-import com.example.demo.model.Status;
-import com.example.demo.model.Role;
+import java.sql.Timestamp;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.util.List;
+import com.example.demo.PaymentCardController.PaymentCardRequest;
+import com.example.demo.model.Address;
+import com.example.demo.model.Customer;
+import com.example.demo.model.PaymentCard;
+import com.example.demo.model.Role;
+import com.example.demo.model.Status;
+import com.example.demo.repository.AddressRepository;
+import com.example.demo.repository.AdminRepository;
+import com.example.demo.repository.CustomerRepository;
+import com.example.demo.repository.PaymentCardRepository;
+import com.example.demo.util.EncryptionUtil;
 
 
 @Service
@@ -128,14 +129,22 @@ public class CustomerService {
         }
 
         if (updateData.getAddress() != null) {
-            Address addr = updateData.getAddress();
-            addressRepository.findByStreetLineAndCityNameAndStateCodeAndPostalCodeAndCountryName(
-                addr.getStreetLine(), addr.getCityName(), addr.getStateCode(),
-                addr.getPostalCode(), addr.getCountryName()
-            ).ifPresentOrElse(
-                customer::setAddress,
-                () -> customer.setAddress(addressRepository.save(addr))
-            );
+            Address incomingAddress = updateData.getAddress();
+            
+            if (customer.getAddress() == null) {
+                // If there's no existing address, set the new one.
+                // The custom setAddress method will handle linking both sides.
+                customer.setAddress(incomingAddress);
+            } else {
+                // If an address already exists, just update its fields.
+                // DO NOT create a new Address object.
+                Address existingAddress = customer.getAddress();
+                existingAddress.setStreetLine(incomingAddress.getStreetLine());
+                existingAddress.setCityName(incomingAddress.getCityName());
+                existingAddress.setStateCode(incomingAddress.getStateCode());
+                existingAddress.setPostalCode(incomingAddress.getPostalCode());
+                existingAddress.setCountryName(incomingAddress.getCountryName());
+            }
         }
 
         customer.setUpdatedAt(new Timestamp(System.currentTimeMillis()));

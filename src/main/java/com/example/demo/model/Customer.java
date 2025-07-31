@@ -1,11 +1,24 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.example.demo.util.EncryptionUtil;
-
 import java.sql.Timestamp;
 import java.util.List;
+
+import com.example.demo.util.EncryptionUtil;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "customer")
@@ -39,8 +52,8 @@ public class Customer {
     @Column(name = "is_subscriber", nullable = false)
     private Boolean isSubscriber;
 
-    @ManyToOne
-    @JoinColumn(name = "address_id", referencedColumnName = "address_id")
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.LAZY)
+    @JsonManagedReference("customer-address")
     private Address address;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -124,7 +137,16 @@ public class Customer {
     public void setIsSubscriber(Boolean isSubscriber) { this.isSubscriber = isSubscriber; }
 
     public Address getAddress() { return address; }
-    public void setAddress(Address address) { this.address = address; }
+    public void setAddress(Address address) {
+        if (address == null) {
+            if (this.address != null) {
+                this.address.setCustomer(null);
+            }
+        } else {
+            address.setCustomer(this);
+        }
+        this.address = address;
+    }
 
     public List<PaymentCard> getPaymentCards() { return paymentCards; }
     public void setPaymentCards(List<PaymentCard> paymentCards) { this.paymentCards = paymentCards; }
