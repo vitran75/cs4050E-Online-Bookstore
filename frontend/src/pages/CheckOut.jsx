@@ -1,72 +1,90 @@
 import React, { useState, useEffect } from 'react';
-
-import { jwtDecode } from 'jwt-decode'; 
-
+import { jwtDecode } from 'jwt-decode';
+import Swal from 'sweetalert2';
 import '../styles/Checkout.css';
 
 const Checkout = () => {
+  // State for customer and cart data
   const [customerId, setCustomerId] = useState(null);
-  const [savedCard, setSavedCard] = useState(null);
-  const [savedAddress, setSavedAddress] = useState(null);
   const [cartItems, setCartItems] = useState([]);
+
+  // State for saved data from the backend
+  const [savedPaymentInfo, setSavedPaymentInfo] = useState(null);
+
+  // State for new card and address forms
+  const [newCardData, setNewCardData] = useState({ decryptedCardNumber: '', expirationDate: '', decryptedCvv: '' });
+  const [newAddressData, setNewAddressData] = useState({ streetLine: '', cityName: '', stateCode: '', postalCode: '', countryName: '' });
+
+  // UI control state
   const [confirmationShown, setConfirmationShown] = useState(false);
   const [showCardForm, setShowCardForm] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // 1. Get customer ID and cart from storage on initial load
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) return;
-
-    try {
-      const decoded = jwtDecode(token);
-      console.log("Decoded JWT:", decoded);
-    
-      const id = decoded.id ?? decoded.userId;
-      if (!id || isNaN(id)) {
-        throw new Error("Invalid ID in JWT");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const id = decoded.id ?? decoded.userId;
+        if (id) setCustomerId(Number(id));
+      } catch (err) {
+        console.error("Failed to decode JWT:", err);
       }
-    
-      setCustomerId(Number(id));
-    } catch (err) {
-      console.error("JWT decode error:", err.message);
-      alert("Invalid token. Please log in again.");
     }
-    
-
     const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
     setCartItems(storedCart);
   }, []);
 
+  // 2. Fetch payment info (which includes the address) once we have a customer ID
   useEffect(() => {
     if (!customerId) return;
 
-    fetch(`http://localhost:8080/api/payment-cards/customer/${customerId}`)
-      .then(res => res.ok ? res.json() : Promise.reject())
-      .then(setSavedCard)
-      .catch(() => setSavedCard(null));
+    const fetchPaymentAndAddress = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`http://localhost:8080/api/payment-cards/customer/${customerId}`);
+        if (!response.ok) throw new Error("No saved payment method found.");
+        
+        const data = await response.json();
+        if (data && data.length > 0) {
+          setSavedPaymentInfo(data[0]);
+        } else {
+          // If no card is found, show the forms to add one
+          setShowCardForm(true);
+          setShowAddressForm(true);
+        }
+      } catch (error) {
+        console.warn(error.message);
+        setShowCardForm(true);
+        setShowAddressForm(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    fetch(`http://localhost:8080/api/customers/${customerId}/addresses`)
-      .then(res => res.ok ? res.json() : Promise.reject())
-      .then(data => setSavedAddress(data[0]))
-      .catch(() => setSavedAddress(null));
+    fetchPaymentAndAddress();
   }, [customerId]);
 
-  const completeOrder = async () => {
-    if (!savedCard || !savedAddress || cartItems.length === 0) {
-      alert("Missing card, address, or cart items.");
+  // 3. Main function to place the order
+  const completeOrder = async (paymentDetails) => {
+    const finalPaymentInfo = paymentDetails || savedPaymentInfo;
+
+    if (!finalPaymentInfo || !finalPaymentInfo.billingAddress || cartItems.length === 0) {
+      Swal.fire("Missing Information", "Please provide payment and address details, and ensure your cart is not empty.", "warning");
       return;
     }
 
     const orderPayload = {
       customerId,
-      paymentCardId: savedCard.id,
-      addressId: savedAddress.id,
+      paymentCardId: finalPaymentInfo.cardId,
+      addressId: finalPaymentInfo.billingAddress.id,
       orderItems: cartItems.map(item => ({
         bookId: item.id,
         quantity: item.quantity,
         price: item.price,
       })),
-
     };
 
     try {
@@ -77,41 +95,58 @@ const Checkout = () => {
       });
 
       if (!res.ok) throw new Error("Failed to place order");
+      
+      localStorage.removeItem('cart');
       setConfirmationShown(true);
     } catch (e) {
-      alert(e.message);
+      Swal.fire("Order Error", e.message, "error");
     }
   };
 
-  const submitNewCard = () => {
-    const cardNumber = document.getElementById("card-number").value;
-    const expirationDate = document.getElementById("expiry").value;
-    const cvv = document.getElementById("cvv").value;
-    const cardHolderName = document.getElementById("cardholder").value;
+  // 4. Function to handle submitting a new card and address
+  const submitNewCardAndAddress = async () => {
+    if (Object.values(newCardData).some(v => !v) || Object.values(newAddressData).some(v => !v)) {
+      Swal.fire("Incomplete Form", "Please fill out all new card and address fields.", "warning");
+      return;
+    }
 
-    fetch(`http://localhost:8080/api/payment-cards/customer/${customerId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cardNumber, expirationDate, cvv, cardHolderName })
-    })
-      .then(res => res.ok ? res.json() : Promise.reject("Card submission failed"))
-      .then(card => {
-        setSavedCard(card);
-        completeOrder();
-      })
-      .catch(alert);
+    const payload = {
+      paymentCard: newCardData,
+      billingAddress: newAddressData,
+    };
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/payment-cards/customer/${customerId}/new-address`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) throw new Error("Card submission failed");
+      
+      const savedData = await response.json();
+      // Use the newly saved card and address to complete the order
+      completeOrder(savedData);
+
+    } catch (error) {
+      Swal.fire("Submission Error", error.message, "error");
+    }
   };
 
-  const submitPayment = () => {
-    showCardForm ? submitNewCard() : completeOrder();
+  // 5. Decides whether to use saved info or submit new info
+  const handleSubmitPayment = () => {
+    if (showCardForm || showAddressForm) {
+      submitNewCardAndAddress();
+    } else {
+      completeOrder();
+    }
   };
 
-  if (!customerId) return <div>Loading...</div>;
+  if (isLoading) return <div className="loading-message">Loading...</div>;
 
   if (confirmationShown) {
     return (
-      <div>
-
+      <div className="confirmation-container">
         <div className="confirmation-message">
           <i className="fas fa-check-circle"></i>
           <h2>Order Confirmed!</h2>
@@ -123,24 +158,23 @@ const Checkout = () => {
   }
 
   return (
-    <div>
+    <div className="checkout-container-wrapper">
       <div className="checkout-container">
         {/* === Payment Step === */}
         <div className="step">
           <h2 className="step-title">Payment Information</h2>
-          {savedCard && !showCardForm ? (
+          {savedPaymentInfo && !showCardForm ? (
             <div className="saved-card">
-              <div>**** **** **** {savedCard.cardNumber?.slice(-4)}</div>
-              <div>Expires {savedCard.expirationDate}</div>
+              <div>**** **** **** {savedPaymentInfo.lastFourDigits}</div>
+              <div>Expires {savedPaymentInfo.expirationDate}</div>
               <button onClick={() => setShowCardForm(true)}>Change</button>
             </div>
           ) : (
             <div className="form">
-              <input id="card-number" placeholder="Card Number" />
-              <input id="expiry" placeholder="MM/YY" />
-              <input id="cvv" placeholder="CVV" />
-              <input id="cardholder" placeholder="Cardholder Name" />
-              <button onClick={() => setShowCardForm(false)}>Use Saved Card</button>
+              <input type="text" placeholder="Card Number" value={newCardData.decryptedCardNumber} onChange={e => setNewCardData({...newCardData, decryptedCardNumber: e.target.value})} />
+              <input type="text" placeholder="MM/YY" value={newCardData.expirationDate} onChange={e => setNewCardData({...newCardData, expirationDate: e.target.value})} />
+              <input type="password" placeholder="CVV" value={newCardData.decryptedCvv} onChange={e => setNewCardData({...newCardData, decryptedCvv: e.target.value})} />
+              {savedPaymentInfo && <button onClick={() => setShowCardForm(false)}>Use Saved Card</button>}
             </div>
           )}
         </div>
@@ -148,18 +182,21 @@ const Checkout = () => {
         {/* === Address Step === */}
         <div className="step">
           <h2 className="step-title">Shipping Address</h2>
-          {savedAddress && !showAddressForm ? (
+          {savedPaymentInfo?.billingAddress && !showAddressForm ? (
             <div className="saved-address">
-              <div>{savedAddress.fullName}</div>
-              <div>{savedAddress.addressLine1}</div>
-              <div>{savedAddress.city}, {savedAddress.state} {savedAddress.zipCode}</div>
+              <div>{savedPaymentInfo.billingAddress.streetLine}</div>
+              <div>{savedPaymentInfo.billingAddress.cityName}, {savedPaymentInfo.billingAddress.stateCode} {savedPaymentInfo.billingAddress.postalCode}</div>
+              <div>{savedPaymentInfo.billingAddress.countryName}</div>
               <button onClick={() => setShowAddressForm(true)}>Change</button>
             </div>
           ) : (
             <div className="form">
-              {/* You can implement address form if needed */}
-              <p>Address form (not implemented)</p>
-              <button onClick={() => setShowAddressForm(false)}>Use Saved Address</button>
+              <input type="text" placeholder="Street Address" value={newAddressData.streetLine} onChange={e => setNewAddressData({...newAddressData, streetLine: e.target.value})} />
+              <input type="text" placeholder="City" value={newAddressData.cityName} onChange={e => setNewAddressData({...newAddressData, cityName: e.target.value})} />
+              <input type="text" placeholder="State" value={newAddressData.stateCode} onChange={e => setNewAddressData({...newAddressData, stateCode: e.target.value})} />
+              <input type="text" placeholder="Zip Code" value={newAddressData.postalCode} onChange={e => setNewAddressData({...newAddressData, postalCode: e.target.value})} />
+              <input type="text" placeholder="Country" value={newAddressData.countryName} onChange={e => setNewAddressData({...newAddressData, countryName: e.target.value})} />
+              {savedPaymentInfo?.billingAddress && <button onClick={() => setShowAddressForm(false)}>Use Saved Address</button>}
             </div>
           )}
         </div>
@@ -172,8 +209,7 @@ const Checkout = () => {
                 <strong>{item.title}</strong> — Qty: {item.quantity} — ${item.price * item.quantity}
               </div>
           ))}
-
-          <button className="btn-primary" onClick={submitPayment}>Complete Order</button>
+          <button className="btn-primary" onClick={handleSubmitPayment}>Complete Order</button>
         </div>
       </div>
     </div>
