@@ -41,18 +41,25 @@ const Home = ({ onAddToCart }) => {
 
     const term = searchTerm.toLowerCase();
     return list.filter((book) => {
+      // Safely normalize data
+      const title = book.title?.toLowerCase() || "";
+      const authors = Array.isArray(book.authors)
+          ? book.authors.join(", ").toLowerCase()
+          : (book.authors?.toLowerCase() || book.author?.toLowerCase() || "");
+      const genre = book.genre?.toLowerCase() || "";
+
       switch (searchFilter) {
-        case 'title':
-          return book.title.toLowerCase().includes(term);
-        case 'author':
-          return book.author.toLowerCase().includes(term);
-        case 'genre':
-          return book.genre?.toLowerCase().includes(term);
-        case 'all':
+        case "title":
+          return title.includes(term);
+        case "author":
+          return authors.includes(term);
+        case "genre":
+          return genre.includes(term);
+        case "all":
           return (
-              book.title.toLowerCase().includes(term) ||
-              book.author.toLowerCase().includes(term) ||
-              book.genre?.toLowerCase().includes(term)
+              title.includes(term) ||
+              authors.includes(term) ||
+              genre.includes(term)
           );
         default:
           return true;
