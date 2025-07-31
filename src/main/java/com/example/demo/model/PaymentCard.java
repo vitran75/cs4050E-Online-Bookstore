@@ -27,7 +27,7 @@ public class PaymentCard {
     private String encryptedCardNumber;
 
     @Column(name = "expiration_date", nullable = false)
-    private LocalDate expirationDate;
+    private String expirationDate;
 
     @Column(name = "encrypted_cvv", length = 100, nullable = false)
     private String encryptedCvv;
@@ -50,7 +50,7 @@ public class PaymentCard {
         this.decryptedCvv = EncryptionUtil.decrypt(encryptedCvv);
     }
 
-    public PaymentCard(Customer customer, String cardNumber, LocalDate expirationDate, String cvv, Address billingAddress) {
+    public PaymentCard(Customer customer, String cardNumber, String expirationDate, String cvv, Address billingAddress) {
         this.customer = customer;
         this.expirationDate = expirationDate;
         this.billingAddress = billingAddress;
@@ -93,11 +93,11 @@ public class PaymentCard {
         this.encryptedCardNumber = encryptedCardNumber;
     }
 
-    public LocalDate getExpirationDate() {
+    public String getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(LocalDate expirationDate) {
+    public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
     }
 
