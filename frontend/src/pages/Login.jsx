@@ -86,9 +86,7 @@ const LogInPage = () => {
             <p>
               Don’t have an account? <a href="/signup">Sign Up now</a>
             </p>
-            <p>
-              Are you an admin? <a href="/signup">Sign Up here</a>
-            </p>
+
           </div>
         </div>
       </div>

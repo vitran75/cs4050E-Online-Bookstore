@@ -182,9 +182,9 @@ const Checkout = () => {
       paymentCardId: savedPaymentInfo.cardId,
       addressId: savedPaymentInfo.billingAddress.id,
       orderItems: cartItems.map(item => ({
-        bookId: item.id,
+        book: { id: item.id },
         quantity: item.quantity,
-        price: item.price,
+        unitPrice: item.price
       })),
       promoCode: discount > 0 ? promoCode : null,
       discountApplied: discount
