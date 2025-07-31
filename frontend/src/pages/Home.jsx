@@ -19,8 +19,11 @@ const Home = ({ onAddToCart }) => {
         const res = await axios.get('http://localhost:8080/api/books');
         const data = res.data;
 
-        const featuredBooks = data.filter((b) => b.status === 'AVAILABLE');
-        const comingSoonBooks = data.filter((b) => b.status === 'COMING_SOON');
+        const featuredBookIds = [21, 22, 24, 25, 26];
+        const comingSoonBookIds = [18, 20, 27, 28, 29];
+
+        const featuredBooks = data.filter((b) => featuredBookIds.includes(b.id));
+        const comingSoonBooks = data.filter((b) => comingSoonBookIds.includes(b.id));
 
         setBooks(data);
         setFeatured(featuredBooks);
@@ -84,29 +87,28 @@ const Home = ({ onAddToCart }) => {
           </div>
 
           {/* Featured Books */}
-          <section>
-            <h2>FEATURED BOOKS</h2>
-            <div className="book-grid">
-              {filteredBooks(featured).length > 0 ? (
-                  filteredBooks(featured).map((book) => (
-                      <BookCard
-                          key={book.id}
-                          id={book.id}
-                          title={book.title}
-                          authors={book.authors}
-                          price={book.price}
-                          coverImageUrl={book.coverImageUrl}
-                          onAddToCart={() => onAddToCart(book)}
-                      />
-                  ))
-              ) : (
-                  <p>No featured books found.</p>
-              )}
-            </div>
+          <section className="book-section">
+
+              <h2>FEATURED BOOKS</h2>
+              <div className="book-grid">
+                {filteredBooks(featured).map((book) => (
+                    <BookCard
+                        key={book.id}
+                        id={book.id}
+                        title={book.title}
+                        authors={book.authors}
+                        price={book.price}
+                        coverImageUrl={book.coverImageUrl}
+                        onAddToCart={() => onAddToCart(book)}
+                    />
+                ))}
+              </div>
+
           </section>
 
           {/* Coming Soon */}
-          <section>
+          <section className="book-section">
+
             <h2>COMING SOON</h2>
             <div className="book-grid">
               {filteredBooks(upcoming).length > 0 ? (
@@ -124,11 +126,13 @@ const Home = ({ onAddToCart }) => {
               ) : (
                   <p>No upcoming books found.</p>
               )}
+
             </div>
           </section>
 
           {/* All Books */}
-          <section>
+          <section className="book-section">
+
             <h2>ALL BOOKS</h2>
             <div className="book-grid">
               {filteredBooks(books).length > 0 ? (
@@ -146,10 +150,12 @@ const Home = ({ onAddToCart }) => {
               ) : (
                   <p>No books found.</p>
               )}
+
             </div>
           </section>
         </main>
       </div>
+
   );
 };
 

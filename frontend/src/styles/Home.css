@@ -1,14 +1,19 @@
 
 .home-page {
-    font-family: 'Arial', sans-serif;
-    color: #ffffff;
+    max-width: 100%;
+    padding: 0 1rem;
+}
+main, section {
     width: 100%;
+    max-width: 100%;
     margin: 0;
-    padding: 0 2rem;
+    padding: 0;
     box-sizing: border-box;
-    background-color: #111;
 }
 
+.section-wrapper {
+    padding: 0 1rem;
+}
 
 html, body, #root {
     height: 100%;
@@ -17,6 +22,24 @@ html, body, #root {
     padding: 0;
     background-color: #111;
 }
+.book-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.section-title {
+    color: #ff0000;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 8px;
+    margin: 30px 0 20px 0;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+
 
 /* Full-width wrapper */
 .header {
@@ -43,9 +66,10 @@ html, body, #root {
 
 /* NEW: Enhanced Search Bar Styles */
 .search-container {
-    max-width: 800px;
+    width: 100%;
+    padding: 0 1rem;
     margin: 0 auto 2rem;
-    padding: 0 15px;
+    box-sizing: border-box;
 }
 
 .search-bar-wrapper {
@@ -96,14 +120,23 @@ html, body, #root {
 /* Book Grid - Black Cards with Red Accents */
 .book-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 25px;
-    margin: 30px 0;
-    width: 100%;
+    grid-template-columns: repeat(5, 250px); /* fixed width per column */
+    justify-content: center;                /* centers the entire grid */
+    gap: 40px;
+    margin: 30px auto;
+    padding: 0 1rem;
 }
 
 
+
+
+
+
+
 .book-card {
+    width: 100%;       /* fill the 250px grid column */
+    max-width: 100%;
+    margin: 0 auto;
     background-color: #000000;
     color: white;
     border-radius: 8px;
@@ -187,6 +220,7 @@ section h2 {
     text-transform: uppercase;
     letter-spacing: 1px;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Subtle shadow for better contrast */
+
 }
 
 /* Footer - Black with Red Accent */
@@ -231,12 +265,22 @@ section h2 {
     font-size: 0.8rem;
     font-weight: bold;
 }
-
+.container {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+}
 /* Responsive Design */
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .book-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
     .book-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .header {
@@ -260,3 +304,10 @@ section h2 {
         font-size: 1.3rem;
     }
 }
+
+@media (max-width: 480px) {
+    .book-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
