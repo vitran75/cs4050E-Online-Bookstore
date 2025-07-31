@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -82,6 +83,11 @@ public class BookOrder {
                 .add(getShippingFee())
                 .add(getTaxAmount())
                 .subtract(getDiscountAmount());
+    }
+
+    @JsonProperty("totalAmount")
+    public BigDecimal getTotalAmount() {
+        return getTotalPrice();
     }
 
     // === Getters and Setters ===
