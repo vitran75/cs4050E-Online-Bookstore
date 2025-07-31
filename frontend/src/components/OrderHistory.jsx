@@ -11,7 +11,7 @@ const OrderHistory = ({ userId }) => {
     const fetchOrders = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:8080/api/orders/customer/${userId}`
+            `http://localhost:8080/api/orders/customer/${userId}`
         );
         setOrders(data);
       } catch (err) {
@@ -29,23 +29,23 @@ const OrderHistory = ({ userId }) => {
   if (orders.length === 0) return <p>You have no past orders.</p>;
 
   return (
-    <div className="order-history">
-      {orders.map((order) => (
-        <div className="order-card" key={order.orderId}>
-          <h4>Order #{order.orderId}</h4>
-          <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
-          <p><strong>Total:</strong> ${order.totalAmount.toFixed(2)}</p>
+      <div className="order-history">
+        {orders.map((order) => (
+            <div className="order-card" key={order.orderId}>
+              <h4>Order #{order.orderId}</h4>
+              <p><strong>Date:</strong> {new Date(order.createdAt ?? order.orderDate).toLocaleDateString()}</p>
+              <p><strong>Total:</strong> ${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}</p>
 
-          <ul className="order-items">
-            {order.items.map((item, index) => (
-              <li key={index}>
-                <span>{item.book.title}</span> &times; {item.quantity} (${item.unitPrice.toFixed(2)} each)
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
+              <ul className="order-items">
+                {(order.orderItems || []).map((item, index) => (
+                    <li key={index}>
+                      <span>{item.book?.title ?? 'Untitled Book'}</span> &times; {item.quantity} (${item.unitPrice ? item.unitPrice.toFixed(2) : '0.00'} each)
+                    </li>
+                ))}
+              </ul>
+            </div>
+        ))}
+      </div>
   );
 };
 

@@ -222,13 +222,25 @@ const EditCustomerForm = ({ customer }) => {
               />
               <div className="grid grid-cols-2 gap-4">
                 <input
-                  type="date"
-                  name="expirationDate"
-                  placeholder="Expiration Date"
-                  value={paymentCard.expirationDate}
-                  onChange={handlePaymentCardChange}
-                  className="form-input"
+                    type="text"
+                    name="expirationDate"
+                    placeholder="MM/YY"
+                    value={paymentCard.expirationDate}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      // Allow only digits and slash
+                      if (/^[0-9/]*$/.test(val) && val.length <= 5) {
+                        // Auto-format MM/YY
+                        if (val.length === 2 && !val.includes('/')) {
+                          setPaymentCard((prev) => ({ ...prev, expirationDate: `${val}/` }));
+                        } else {
+                          setPaymentCard((prev) => ({ ...prev, expirationDate: val }));
+                        }
+                      }
+                    }}
+                    className="form-input"
                 />
+
                 <input
                   type="password"
                   name="decryptedCvv"
