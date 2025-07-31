@@ -242,4 +242,56 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
         }
     }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().body("Email is required.");
+        }
+
+        if (!customerService.isEmailRegistered(email)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No account found with that email.");
+        }
+
+        String code = VerificationUtil.generateCode();
+        verificationCodeStore.storeCode(email, code);
+
+        try {
+            emailService.sendPasswordResetCode(email, code);
+            return ResponseEntity.ok("Password reset code sent.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to send reset email.");
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String code = body.get("code");
+        String newPassword = body.get("newPassword");
+
+        if (email == null || code == null || newPassword == null ||
+                email.isEmpty() || code.isEmpty() || newPassword.isEmpty()) {
+            return ResponseEntity.badRequest().body("Email, code, and new password are required.");
+        }
+
+        if (!verificationCodeStore.verifyCode(email, code)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired code.");
+        }
+
+        try {
+            Customer customer = customerService.findCustomerByEmail(email);
+            customer.setPasswordHash(EncryptionUtil.encrypt(newPassword));
+            customerService.save(customer);
+            verificationCodeStore.removeCode(email);
+            emailService.sendPasswordResetConfirmation(email);
+            return ResponseEntity.ok("Password reset successful.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found.");
+        }
+    }
+
+
 }
